@@ -30,6 +30,6 @@ class jwtMiddleware
                 return response()->json(['error'=>'Something is wrong']);
             }
         }
-        return $next($request); 
+        return $next($request);  
     }
 }
