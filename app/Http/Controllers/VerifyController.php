@@ -8,6 +8,10 @@ use App\User;
 
 class VerifyController extends Controller
 {
+    public function getUnverifiedUsers(){
+        $users = Verification::all();
+        return response()->json(["status" => "good", "data" => $users], 200);
+    }
     public function create(Request $request){
         // // if ($request->hasFile('image')){
         //     $file = $request['image'];

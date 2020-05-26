@@ -33,6 +33,8 @@ Route::group([], function () {
     });
     Route::get("users/all", "UserController@fetchAllUsers");
     Route::post("users/verify", "VerifyController@create");
+
+    Route::get("users/unverified", "VerifyController@getUnverifiedUsers");
 });
 Route::group([],function () {
     // ['middleware' => 'api-header']
