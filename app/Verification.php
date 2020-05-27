@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Verification extends Model
 {
-   protected $fillable = ['images',"status"];
+   protected $fillable = ['images',"status", "user_id"];
 
    public function user()
    {
