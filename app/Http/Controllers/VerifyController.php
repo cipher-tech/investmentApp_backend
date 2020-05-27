@@ -8,24 +8,43 @@ use App\User;
 
 class VerifyController extends Controller
 {
+    private function genetateResponse($status, $data){
+        return  ["status" => $status, "data" => $data];
+    }
     public function getUnverifiedUsers(){
         $users = Verification::all();
         return response()->json(["status" => "good", "data" => $users], 200);
     }
     public function create(Request $request){
-        if($request->get('image'))
+        if($request->get('selfi') && $request->get('address') && $request->get('idCard'))
         {
-           $image = $request->get('image');
-           $name = time().'.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
-           \Image::make($request->get('image'))->save(public_path('images\\').$name);
+           $selfi = $request->get('selfi');
+           $selfiPath = time().'.' . explode('/', explode(':', substr($selfi, 0, strpos($selfi, ';')))[1])[1];
+           \Image::make($request->get('selfi'))->save(public_path('images\\').$selfiPath);
+
+           $idCard = $request->get('idCard');
+           $idCardPath = time().'.' . explode('/', explode(':', substr($idCard, 0, strpos($idCard, ';')))[1])[1];
+           \Image::make($request->get('idCard'))->save(public_path('images\\').$idCardPath);
+
+           $address = $request->get('address');
+           $addressPath = time().'.' . explode('/', explode(':', substr($address, 0, strpos($address, ';')))[1])[1];
+           \Image::make($request->get('address'))->save(public_path('images\\').$addressPath);
+
+           $verificationPhotos = [
+               "selfi" => $selfiPath,
+               "idCard" => $idCardPath,
+               "address" => $idCardPath
+           ];
+           $photos = json_encode($verificationPhotos);
 
            $user = User::whereId($request->get("id"))->firstOrFail();
            $info = new Verification(array(
-                    "images" => $name,
+                    "images" => $photos,
                     "status" => "unverified", 
                     "user_id" => $request->get("id")
             ));
-            return $user->verifiedUsers()->save($info) ?  response()->json("okey ", 200) :  response()->json("not ok", 402);
+            // return response()->json($verificationPhotos, 200);
+            return $user->verifiedUsers()->save($info) ?  response()->json(["status" => "success"], 200) :  response()->json("not ok", 402);
          }
  
          
