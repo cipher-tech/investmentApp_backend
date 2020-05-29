@@ -35,6 +35,11 @@ Route::group([], function () {
     Route::post("users/verify", "VerifyController@create");
 
     Route::get("users/unverified", "VerifyController@getUnverifiedUsers");
+    Route::post("users/verify", "VerifyController@verifyUsers");
+
+    Route::post("admin/add-rate", "RateController@create");
+    Route::get("admin/get-rate", "RateController@index");
+
 });
 Route::group([],function () {
     // ['middleware' => 'api-header']
