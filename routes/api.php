@@ -22,7 +22,7 @@ Route::post("check", function (Request $request){
     return response()->json("check good", 200);
 });
 
-Route::group([], function () {
+Route::group(['middleware' => ['jwt.auth']], function () {
     // 'middleware' => ['jwt.auth','api-header']
     // all routes to protected resources are registered here  
     Route::get('users/list', function(){
@@ -32,13 +32,24 @@ Route::group([], function () {
         return response()->json($response, 201);
     });
     Route::get("users/all", "UserController@fetchAllUsers");
-    Route::post("users/verify", "VerifyController@create");
+    Route::post("users/update", "UserController@update");
+    Route::post("users/requestVerification", "VerifyController@create");
 
     Route::get("users/unverified", "VerifyController@getUnverifiedUsers");
     Route::post("users/verify", "VerifyController@verifyUsers");
 
+
+    Route::post("users/deposit", "DepositController@store");
+    Route::get("admin/deposits", "DepositController@index");
+    Route::post("admin/acceptDeposit", "DepositController@update");
+
+    Route::post("users/widthdrawl", "WidthdrawlController@store");
+    Route::get("admin/widthdrawls", "WidthdrawlController@index");
+    Route::post("admin/acceptWidthdrawl", "WidthdrawlController@update");
+
     Route::post("admin/add-rate", "RateController@create");
     Route::get("admin/get-rate", "RateController@index");
+    Route::post("admin/update-rate", "RateController@update");
 
 });
 Route::group([],function () {

@@ -14,31 +14,31 @@ class VerifyController extends Controller
     }
     public function getUnverifiedUsers()
     {
-        $users = Verification::all();
+        $users = Verification::where("status", "unverified")->get();
         return response()->json(["status" => "good", "data" => $users], 200);
     }
     public function create(Request $request){
         if ($request->get('selfi') && $request->get('address') && $request->get('idCard')) {
             $selfi = $request->get('selfi');
-            $selfiPath = time() . '.' . explode('/', explode(':', substr($selfi, 0, strpos($selfi, ';')))[1])[1];
+            $selfiPath = time() . 'selfi.' . explode('/', explode(':', substr($selfi, 0, strpos($selfi, ';')))[1])[1];
             \Image::make($request->get('selfi'))->save(public_path('images\\') . $selfiPath);
 
             $idCard = $request->get('idCard');
-            $idCardPath = time() . '.' . explode('/', explode(':', substr($idCard, 0, strpos($idCard, ';')))[1])[1];
+            $idCardPath = time() . 'id_card.' . explode('/', explode(':', substr($idCard, 0, strpos($idCard, ';')))[1])[1];
             \Image::make($request->get('idCard'))->save(public_path('images\\') . $idCardPath);
 
             $address = $request->get('address');
-            $addressPath = time() . '.' . explode('/', explode(':', substr($address, 0, strpos($address, ';')))[1])[1];
+            $addressPath = time() . 'address.' . explode('/', explode(':', substr($address, 0, strpos($address, ';')))[1])[1];
             \Image::make($request->get('address'))->save(public_path('images\\') . $addressPath);
 
             $verificationPhotos = [
                 "selfi" => $selfiPath,
                 "idCard" => $idCardPath,
-                "address" => $idCardPath
+                "address" => $addressPath
             ];
             $photos = json_encode($verificationPhotos);
 
-            $user = User::whereId($request->get("id"))->firstOrFail();
+            $user =  User::whereId($request->get('id'))->firstOrFail();
             $info = new Verification(array(
                 "images" => $photos,
                 "status" => "unverified",
@@ -80,13 +80,14 @@ class VerifyController extends Controller
             $verifyContent = Verification::whereId($request->verifyId)->firstOrFail();
             $verifyContent->status = "verified";
              if ($verifyContent->save()) {
-                return response()->json($this->genetateResponse("success","update user"));
+                $users = Verification::where("status", "unverified")->get();
+                return response()->json($this->genetateResponse("success",["update user", $users ]), 200);
              } else {
-                return response()->json($this->genetateResponse("failed","could not update verified"));
+                return response()->json($this->genetateResponse("failed","could not update verified"), 402);
              }
              
         }else{
-            return response()->json($this->genetateResponse("failed","could not update user"));
+            return response()->json($this->genetateResponse("failed","could not update user"), 402);
         }
     }
 }

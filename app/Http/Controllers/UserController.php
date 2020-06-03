@@ -94,4 +94,21 @@ class UserController extends Controller
        }
         return response()->json($response, $status);
     }
+
+    public function update(Request $request)
+    {
+        $user = User::whereId($request->get("userId"))->firstOrFail();
+
+        $user->role = $request->get("role");
+        $user->wallet_balc = $request->get("wallet_bal");
+
+        if ($user->save()) {
+            $allUsers = User::all();
+            $response = $this->genetateResponse("success", $allUsers );
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not Update rate");
+            return response()->json($response, 402);
+        }
+    }
 }

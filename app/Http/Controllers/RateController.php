@@ -88,9 +88,22 @@ class RateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $rate = Rate::whereId($request->get("rateId"))->firstOrFail();
+
+        $rate->current_rate = $request->get("currentRate");
+        $rate->buying = $request->get("buying");
+        $rate->selling = $request->get("selling");
+
+        if ($rate->save()) {
+            $allRates = Rate::all();
+            $response = $this->genetateResponse("success", $allRates );
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not Update rate");
+            return response()->json($response, 402);
+        }
     }
 
     /**

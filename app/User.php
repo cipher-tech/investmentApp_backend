@@ -63,4 +63,10 @@ class User extends Authenticatable implements JWTSubject
     public function verifiedUsers() {
         return $this->hasOne(Verification::class);
     }
+    public function deposit() {
+        return $this->hasMany(Deposit::class);
+    }
+    public function widthdrawl() {
+        return $this->hasMany(Widthdrawal::class);
+    }
 }
