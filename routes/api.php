@@ -31,6 +31,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
         $response = ['success'=>true, 'data'=>$users];
         return response()->json($response, 201);
     });
+    Route::post("user/get", "UserController@getUser");
+
     Route::get("users/all", "UserController@fetchAllUsers");
     Route::post("users/update", "UserController@update");
     Route::post("users/requestVerification", "VerifyController@create");
@@ -60,4 +62,17 @@ Route::group([],function () {
 
     Route::post('login', 'UserController@login');
     Route::post('register', 'UserController@register');
+});
+
+Route::get('send-mail', function () {
+   
+    $details = [
+        'title' => 'Mail from ItSolutionStuff.com',
+        'body' => 'This is for testing email using smtp'
+    ];
+   
+    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+   
+    dd("Email is Sent.");
+    return "sent";
 });

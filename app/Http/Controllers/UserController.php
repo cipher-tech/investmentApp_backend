@@ -7,9 +7,10 @@ use App\User;
 use JWTAuth;
 use JWTAuthException;
 
-class UserController extends Controller
+class UserController extends Controller 
 {
-    private function genetateResponse($status, $data){
+    private function genetateResponse($status, $data)
+    {
         return  ["status" => $status, "data" => $data];
     }
     private function getToken($email, $password)
@@ -17,11 +18,11 @@ class UserController extends Controller
         $token = null;
         //$credentials = $request->only('email', 'password');
         try {
-            if (!$token = JWTAuth::attempt( ['email'=>$email, 'password'=>$password])) {
+            if (!$token = JWTAuth::attempt(['email' => $email, 'password' => $password])) {
                 return response()->json([
                     'response' => 'error',
                     'message' => 'Password or email is invalid',
-                    'token'=>$token
+                    'token' => $token
                 ]);
             }
         } catch (JWTAuthException $e) {
@@ -41,57 +42,56 @@ class UserController extends Controller
             $token = self::getToken($request->email, $request->password);
             $user->auth_token = $token;
             $user->save();
-            $response = ['status'=>true, 'data'=>["user"=> $user]];           
-        }
-        else 
-          $response = ['status'=>false, 'data'=>'Record doesnt exists'];
-      
+            $response = ['status' => true, 'data' => ["user" => $user]];
+        } else
+            $response = ['status' => false, 'data' => 'Record doesnt exists'];
+
 
         return response()->json($response, 201);
     }
 
     public function register(Request $request)
-    { 
+    {
         $payload = [
-            'password'=>\Hash::make($request->password),
-            'email'=>$request->email,
-            'first_name'=>$request->first_name,
-            'slug'=> \uniqid(),
-            'phone_no'=> $request->phone,
-            'auth_token'=> ''
+            'password' => \Hash::make($request->password),
+            'email' => $request->email,
+            'first_name' => $request->first_name,
+            "last_name" => $request->last_name,
+            'slug' => \uniqid(),
+            'phone_no' => $request->phone,
+            'auth_token' => ''
         ];
-                  
+
         $user = new \App\User($payload);
-        if ($user->save())
-        {
-            
+        if ($user->save()) {
+
             $token = self::getToken($request->email, $request->password); // generate user token
-            
-            if (!is_string($token))  return response()->json(['status'=>false,'data'=>'Token generation failed'], 201);
-            
+
+            if (!is_string($token))  return response()->json(['status' => false, 'data' => 'Token generation failed'], 201);
+
             $user = \App\User::where('email', $request->email)->get()->first();
-            
+
             $user->auth_token = $token; // update user token
-            
+
             $user->save();
-            
-            $response = ['status'=>true, 'data'=>['name'=>$user->name,'id'=>$user->id,'email'=>$request->email,'auth_token'=>$token]];        
-        }
-        else
-            $response = ['status'=>false, 'data'=>'Couldnt register user'];
-        
-        
+
+            $response = ['status' => true, 'data' => ['name' => $user->name, 'id' => $user->id, 'email' => $request->email, 'auth_token' => $token]];
+        } else
+            $response = ['status' => false, 'data' => 'Couldnt register user'];
+
+
         return response()->json($response, 201);
     }
 
-    public function fetchAllUsers(){
-       if( $users = User::all()){
+    public function fetchAllUsers()
+    {
+        if ($users = User::all()) {
             $response = $this->genetateResponse(true, $users);
             $status = 201;
-       }else {
+        } else {
             $response = $this->genetateResponse(false, 'Couldnt get users');
             $status = 402;
-       }
+        }
         return response()->json($response, $status);
     }
 
@@ -104,10 +104,21 @@ class UserController extends Controller
 
         if ($user->save()) {
             $allUsers = User::all();
-            $response = $this->genetateResponse("success", $allUsers );
+            $response = $this->genetateResponse("success", $allUsers);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not Update rate");
+            return response()->json($response, 402);
+        }
+    }
+    public function getUser(Request $request)
+    {
+        $user = User::whereId($request->get("id"))->firstOrFail();
+        if ($user) {
+            $response = $this->genetateResponse("success", $user);
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not get user");
             return response()->json($response, 402);
         }
     }

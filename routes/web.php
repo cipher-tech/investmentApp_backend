@@ -16,3 +16,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('send-mail', function () {
+   
+    $details = [
+        'title' => 'Mail from ItSolutionStuff.com',
+        'body' => 'This is for testing email using smtp'
+    ];
+   
+    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+   
+    dd("Email is Sent.");
+    return "sent";
+});

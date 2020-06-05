@@ -55,6 +55,7 @@ class DepositController extends Controller
 
         if ($deposit->save()) {
             return response()->json($this->genetateResponse("success","Deposit request placed Successfully"), 200);
+            
          } else {
             return response()->json($this->genetateResponse("failed","could not place request"), 402);
          }
