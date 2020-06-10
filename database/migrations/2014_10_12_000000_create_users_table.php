@@ -34,7 +34,7 @@ class CreateUsersTable extends Migration
             $table->string('zip_code')->nullable();
             $table->integer('earnings')->default(0);
             $table->string('ref_code')->nullable();
-            $table->string('auth_token')->nullable();
+            $table->text('auth_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

@@ -49,6 +49,10 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get("admin/widthdrawls", "WidthdrawlController@index");
     Route::post("admin/acceptWidthdrawl", "WidthdrawlController@update");
 
+    Route::post("admin/add-plan", "PlanController@store");
+    Route::get("admin/get-plan", "PlanController@index");
+    Route::post("admin/register-plan", "PlanController@registerPlan");
+
     Route::post("admin/add-rate", "RateController@create");
     Route::get("admin/get-rate", "RateController@index");
     Route::post("admin/update-rate", "RateController@update");

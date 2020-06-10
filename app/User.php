@@ -69,4 +69,19 @@ class User extends Authenticatable implements JWTSubject
     public function widthdrawl() {
         return $this->hasMany(Widthdrawal::class);
     }
+
+    public function history()
+    {
+        return $this->hasMany('App\History');
+    }
+
+    public function plan()
+    {
+        return $this->hasOne('App\Plan');
+    }
+
+    public function plans()
+    {
+        return $this->belongsToMany('App\Plan', "plans_users")->withTimestamps()->withPivot("amount","count","duration","status","rate","earnings") ;;
+    }
 }
