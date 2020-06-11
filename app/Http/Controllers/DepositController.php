@@ -19,7 +19,7 @@ class DepositController extends Controller
      */
     public function index()
     {
-        $deposits = Deposit::all();
+        $deposits = Deposit::where("status", "pending")->get();
         if ($deposits) {
             return response()->json($this->genetateResponse("success",$deposits), 200);
          } else {
@@ -99,7 +99,7 @@ class DepositController extends Controller
         $user->wallet_balc +=  $request->get("amount");
 
         if ($deposit->save() && $user->save()) {
-            $deposits = Deposit::all();
+            $deposits = Deposit::where("status", "pending")->get();
             return response()->json($this->genetateResponse("success",["update user", $deposits ]), 200);
         } else {
             return response()->json($this->genetateResponse("failed","could not update verified"), 402);

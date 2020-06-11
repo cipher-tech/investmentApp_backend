@@ -20,7 +20,7 @@ class WidthdrawlController extends Controller
      */
     public function index()
     {
-        $widthdrawl = Widthdrawal::all();
+        $widthdrawl = Widthdrawal::where("status", "pending")->get();
         if ($widthdrawl) {
             return response()->json($this->genetateResponse("success",$widthdrawl), 200);
          } else {
@@ -101,7 +101,7 @@ class WidthdrawlController extends Controller
             $user->wallet_balc =  0;
         }
         if ($widthdrawl->save() && $user->save()) {
-            $widthdrawal = Widthdrawal::all();
+            $widthdrawal = Widthdrawal::where("status", "pending")->get(); 
             return response()->json($this->genetateResponse("success",["update user", $widthdrawal ]), 200);
         } else {
             return response()->json($this->genetateResponse("failed","could not update verified"), 402);
