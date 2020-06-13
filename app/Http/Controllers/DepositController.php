@@ -54,6 +54,14 @@ class DepositController extends Controller
         ));
 
         if ($deposit->save()) {
+            
+            // $details = [
+            //     'title' => 'Mail from ItSolutionStuff.com',
+            //     'body' => 'This is for testing email using smtp'
+            // ];
+        
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+            
             return response()->json($this->genetateResponse("success","Deposit request placed Successfully"), 200);
             
          } else {

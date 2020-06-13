@@ -127,17 +127,9 @@ class PlanController extends Controller
         $plan = Plan::wherePlan($request->plan)->firstOrFail();
         $user = User::whereId($request->userId)->firstOrFail();
 
-        if($user->current_plan !== "active"){
-            $user->current_plan = "active";
-            $user->save();
-        }else{
-            $response = $this->genetateResponse("failed", "Already on a  plan");
-            return response()->json($response, 200);
-        }
-
         if (
-            $plan->users()->sync([
-                $request->userId =>
+            $plan->users()->save( 
+                $user,
                 [
                     "amount"  => $request->amount,
                     "count"   => 0,
@@ -146,10 +138,25 @@ class PlanController extends Controller
                     "rate"    => $plan->rate,
                     "earnings" => 0
                 ]
-            ])
+            )
         ) {
-            $user->wallet_balc -= $request->amount;
-            $user->save();
+           
+            // $details = [
+            //     'title' => 'Mail from ItSolutionStuff.com',
+            //     'body' => 'This is for testing email using smtp'
+            // ];
+        
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+
+            if($user->current_plan !== "active"){
+                $user->wallet_balc -= $request->amount;
+                $user->current_plan = "active";
+                $user->save();
+            }else{
+                $response = $this->genetateResponse("failed", "Already on a  plan");
+                return response()->json($response, 200);
+            }
+
             $response = $this->genetateResponse("success", "Plan Successfully Subscribed");
             return response()->json($response, 200);
         } else {

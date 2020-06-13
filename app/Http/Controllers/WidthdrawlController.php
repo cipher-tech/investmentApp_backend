@@ -54,6 +54,13 @@ class WidthdrawlController extends Controller
             "amount" => $request->get("amount"),
         ));
 
+        // $details = [
+        //     'title' => 'Mail from ItSolutionStuff.com',
+        //     'body' => 'This is for testing email using smtp'
+        // ];
+    
+        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+
         if ($widthdrawal->save()) {
             return response()->json($this->genetateResponse("success","Widthdrawl request placed Successfully"), 200);
         } else {

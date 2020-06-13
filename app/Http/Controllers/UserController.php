@@ -59,9 +59,12 @@ class UserController extends Controller
             "last_name" => $request->last_name,
             'slug' => \uniqid(),
             'phone_no' => $request->phone,
-            'auth_token' => ''
+            'auth_token' => '',
+            "ref_code"  => $request->refCode || null,
         ];
 
+        // send email to user with ref code 
+        
         $user = new \App\User($payload);
         if ($user->save()) {
 

@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             Plans_users::where("status", "active")->get()->filter(function ($plan) {
                 if($plan->count !== $plan->duration){
-                    if (intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime($plan->created_at))->format('%d')) >= 1) {
+                    if (intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime($plan->created_at))->format('%i')) >= 1) {
                         $earnings =  ($plan->rate / 100 ) * $plan->amount;
                         $plan->earnings +=  $earnings;
                         $plan->count += 1;
