@@ -60,11 +60,11 @@ class UserController extends Controller
             'slug' => \uniqid(),
             'phone_no' => $request->phone,
             'auth_token' => '',
-            "ref_code"  => $request->refCode || null,
+            "ref_code"  => $request->refCode ? $request->refCode : null,
         ];
 
         // send email to user with ref code 
-        
+
         $user = new \App\User($payload);
         if ($user->save()) {
 
