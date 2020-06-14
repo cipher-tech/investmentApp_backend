@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use Illuminate\Support\Facades\Route;
 
 // use function PHPSTORM_META\type;
@@ -67,8 +68,10 @@ Route::get('/', function () {
     // Ex. (time now = November 23 2017)
     // getTimeInterval("2016-05-04 12:00:00"); // Returns: 1 year ago
     // echo getTimeInterval("2020-06-8 12:00:00"); // Returns: 1 month until
-    echo  intval(date_diff(new DateTime(date('Y-m-d H:i:s', time())), new DateTime("2020-06-08 15:10:29"))->format('%h')); // . "days";
+    // echo  intval(date_diff(new DateTime(date('Y-m-d H:i:s', time())), new DateTime("2020-06-08 15:10:29"))->format('%h')); // . "days";
 
+    $user = User::whereId(14)->firstOrFail();
+    echo $user->ref_code ? "yes " : "no";
     // echo  date_diff(new DateTime("2016-05-04 12:00:00"), new DateTime("2016-05-05 12:00:00"));
 });
 

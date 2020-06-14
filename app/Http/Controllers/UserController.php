@@ -64,7 +64,13 @@ class UserController extends Controller
         ];
 
         // send email to user with ref code 
-
+ // $details = [
+            //     'title' => 'Mail from ItSolutionStuff.com',
+            //     'body' => 'This is for testing email using smtp'
+            // ];
+        
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+            
         $user = new \App\User($payload);
         if ($user->save()) {
 

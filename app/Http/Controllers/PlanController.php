@@ -127,7 +127,15 @@ class PlanController extends Controller
         $plan = Plan::wherePlan($request->plan)->firstOrFail();
         $user = User::whereId($request->userId)->firstOrFail();
 
-        if (
+        if ($user->current_plan !== "active") {
+           
+            // $details = [
+            //     'title' => 'Mail from ItSolutionStuff.com',
+            //     'body' => 'This is for testing email using smtp'
+            // ];
+        
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+
             $plan->users()->save( 
                 $user,
                 [
@@ -138,15 +146,18 @@ class PlanController extends Controller
                     "rate"    => $plan->rate,
                     "earnings" => 0
                 ]
-            )
-        ) {
-           
-            // $details = [
-            //     'title' => 'Mail from ItSolutionStuff.com',
-            //     'body' => 'This is for testing email using smtp'
-            // ];
-        
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+                );
+
+            if($user->ref_code){
+                $bonus = 0.05 * $request->amount;
+                $referer = User::whereSlug($user->ref_code)->firstOrFail();
+                $referer->wallet_balc += $bonus;
+                $referer->save();
+                
+                $user->ref_code = null;
+                $user->save();
+                // send email
+            }
 
             if($user->current_plan !== "active"){
                 $user->wallet_balc -= $request->amount;
@@ -160,7 +171,7 @@ class PlanController extends Controller
             $response = $this->genetateResponse("success", "Plan Successfully Subscribed");
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not register plan");
+            $response = $this->genetateResponse("failed","Already on a plan");
             return response()->json($response, 402);
         }
         // new Plans_users(array(
