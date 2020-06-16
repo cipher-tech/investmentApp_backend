@@ -45,22 +45,23 @@ class DepositController extends Controller
      */
     public function store(Request $request)
     {
+        $slug = uniqid();
         $deposit = new Deposit(array(
             "user_id" => $request->get("id"),
             "status" => "pending",
-            "slug" => uniqid(),
+            "slug" => $slug,
             "trans_type" => "deposit",
             "amount" => $request->get("amount"),
         ));
 
         if ($deposit->save()) {
             
-            // $details = [
-            //     'title' => 'Mail from ItSolutionStuff.com',
-            //     'body' => 'This is for testing email using smtp'
-            // ];
+            $uesrEmail = [
+                'title' => 'New deposit Request',
+                'body' => 'A new deposit request has been placed. Check your dashboard. <br/> transction id'. $slug 
+            ];
         
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
             
             return response()->json($this->genetateResponse("success","Deposit request placed Successfully"), 200);
             

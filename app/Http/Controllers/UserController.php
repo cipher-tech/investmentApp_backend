@@ -75,6 +75,12 @@ class UserController extends Controller
         if ($user->save()) {
 
             $token = self::getToken($request->email, $request->password); // generate user token
+            $uesrEmail = [
+                'title' => 'Registration Successful',
+                'body' => 'Your registration was successful, log i  to access your dashboard.'
+            ];
+        
+            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
 
             if (!is_string($token))  return response()->json(['status' => false, 'data' => 'Token generation failed'], 201);
 

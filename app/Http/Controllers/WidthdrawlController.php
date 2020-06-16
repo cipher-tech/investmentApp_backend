@@ -8,7 +8,8 @@ use App\User;
 
 class WidthdrawlController extends Controller
 {
-    
+
+    // private $emailAddress = env('MAIL_USERNAME');
     private function genetateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
@@ -46,22 +47,32 @@ class WidthdrawlController extends Controller
      */
     public function store(Request $request)
     {
+        $slug = uniqid();
         $widthdrawal = new Widthdrawal (array(
             "user_id" => $request->get("id"),
             "status" => "pending",
-            "slug" => uniqid(),
+            "slug" => $slug,
             "trans_type" => "deposit",
             "amount" => $request->get("amount"),
         ));
 
-        // $details = [
-        //     'title' => 'Mail from ItSolutionStuff.com',
-        //     'body' => 'This is for testing email using smtp'
-        // ];
-    
-        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
-
+        
         if ($widthdrawal->save()) {
+            $userMail = User::whereId($request->get("id"))->firstOrFail();
+            $details = [
+                'title' => 'New Deposit Request',
+                'body' => 'A new withdrawl request has been placed. Check your dashboard. <br/> transction id'. $slug 
+            ];
+        
+            // \Mail::to(env('MAIL_USERNAME'))->send(new \App\Mail\DepositMail($details));
+
+            $uesrEmail = [
+                'title' => 'New withdrawl Request',
+                'body' => 'A new withdrawl request has been placed. Check your dashboard'
+            ];
+        
+            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
+
             return response()->json($this->genetateResponse("success","Widthdrawl request placed Successfully"), 200);
         } else {
             return response()->json($this->genetateResponse("failed","could not place request"), 402);

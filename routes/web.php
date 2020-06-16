@@ -78,11 +78,11 @@ Route::get('/', function () {
 Route::get('send-mail', function () {
 
     $details = [
-        'title' => 'Mail from ItSolutionStuff.com',
-        'body' => 'This is for testing email using smtp'
+        'title' => 'New Deposit Request',
+        'body' => 'A new withdrawl request has been placed. Check your dashboard'
     ];
 
-    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+    \Mail::to(env('MAIL_USERNAME'))->send(new \App\Mail\DepositMail($details));
 
     dd("Email is Sent.");
     return "sent";

@@ -128,13 +128,6 @@ class PlanController extends Controller
         $user = User::whereId($request->userId)->firstOrFail();
 
         if ($user->current_plan !== "active") {
-           
-            // $details = [
-            //     'title' => 'Mail from ItSolutionStuff.com',
-            //     'body' => 'This is for testing email using smtp'
-            // ];
-        
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
 
             $plan->users()->save( 
                 $user,
@@ -147,15 +140,28 @@ class PlanController extends Controller
                     "earnings" => 0
                 ]
                 );
+                $details = [
+                    'title' => 'Plan subcribtion successful',
+                    'body' => 'Your subcribtion for '. $request->plan . " was successful"
+                ];
+            
+                // \Mail::to(env($user->email))->send(new \App\Mail\DepositMail($details));
 
             if($user->ref_code){
                 $bonus = 0.05 * $request->amount;
-                $referer = User::whereSlug($user->ref_code)->firstOrFail();
-                $referer->wallet_balc += $bonus;
-                $referer->save();
+                $referrer  = User::whereSlug($user->ref_code)->firstOrFail();
+                $referrer ->wallet_balc += $bonus;
+                $referrer ->save();
                 
                 $user->ref_code = null;
                 $user->save();
+
+                $details = [
+                    'title' => 'Referrer Bonus ',
+                    'body' => 'Your referrer link was used, hence you will get a bonus of 5% off the subcribers first plan'
+                ];
+            
+                // \Mail::to(env($user->email))->send(new \App\Mail\DepositMail($details));
                 // send email
             }
 
@@ -174,18 +180,6 @@ class PlanController extends Controller
             $response = $this->genetateResponse("failed","Already on a plan");
             return response()->json($response, 402);
         }
-        // new Plans_users(array(
-        //     "plan_id" => $plan->id,
-        //     "user_id" => $request->userId
-        // "plan_id" => $plan->id,
-        //     "user_id" => $request->userId,,
-        //     "amount"  => $request->amount,
-        //     "count"   => 0,
-        //     "duration"=> $plan->duration,
-        //     "status"  => "active",
-        //     "rate"    => $plan->rate,
-        //     "earnings"=> 0
-        // ));
 
     }
 }
