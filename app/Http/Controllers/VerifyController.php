@@ -17,6 +17,7 @@ class VerifyController extends Controller
         $users = Verification::where("status", "unverified")->get();
         return response()->json(["status" => "good", "data" => $users], 200);
     }
+
     public function create(Request $request){
         if ($request->get('selfi') && $request->get('address') && $request->get('idCard')) {
             $selfi = $request->get('selfi');
@@ -41,6 +42,7 @@ class VerifyController extends Controller
             $user =  User::whereId($request->get('id'))->firstOrFail();
             $info = new Verification(array(
                 "images" => $photos,
+                "email"  => $user->email,
                 "status" => "unverified",
                 "user_id" => $request->get("id")
             ));
@@ -89,5 +91,14 @@ class VerifyController extends Controller
         }else{
             return response()->json($this->genetateResponse("failed","could not update user"), 402);
         }
+    }
+
+    public function destory(Request $request) {
+        if (Verification::whereId($request->verifyId)->delete()) {
+            $users = Verification::where("status", "unverified")->get();
+            return response()->json($this->genetateResponse("success",["Deleted user", $users ]), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
+         }
     }
 }

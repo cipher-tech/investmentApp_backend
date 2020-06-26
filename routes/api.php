@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post("check", function (Request $request){
     return response()->json("check good", 200);
 });
+Route::get("admin/get-rate", "RateController@index");
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     // 'middleware' => ['jwt.auth','api-header']
@@ -36,25 +37,30 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get("users/all", "UserController@fetchAllUsers");
     Route::post("users/update", "UserController@update");
     Route::post("users/requestVerification", "VerifyController@create");
+    Route::post("users/updateUserInfo", "UserController@updateUserInfo");
+    Route::post("users/updateUserPassword", "UserController@updateUserPassword");
+    Route::post("users/userTransactions", "UserController@userTransactions");
 
     Route::get("users/unverified", "VerifyController@getUnverifiedUsers");
     Route::post("users/verify", "VerifyController@verifyUsers");
+    Route::post("users/verify-delete", "VerifyController@destory");
 
 
     Route::post("users/deposit", "DepositController@store");
     Route::get("admin/deposits", "DepositController@index");
     Route::post("admin/acceptDeposit", "DepositController@update");
+    Route::post("admin/delete-deposit", "DepositController@destroy");
 
     Route::post("users/widthdrawl", "WidthdrawlController@store");
     Route::get("admin/widthdrawls", "WidthdrawlController@index");
     Route::post("admin/acceptWidthdrawl", "WidthdrawlController@update");
+    Route::post("admin/delete-Widthdrawl", "WidthdrawlController@destroy");
 
     Route::post("admin/add-plan", "PlanController@store");
     Route::get("admin/get-plan", "PlanController@index");
     Route::post("admin/register-plan", "PlanController@registerPlan");
 
     Route::post("admin/add-rate", "RateController@create");
-    Route::get("admin/get-rate", "RateController@index");
     Route::post("admin/update-rate", "RateController@update");
 
 });
@@ -66,6 +72,7 @@ Route::group([],function () {
 
     Route::post('login', 'UserController@login');
     Route::post('register', 'UserController@register');
+    Route::post('passwordReset', 'UserController@resetPassword');
 });
 
 Route::get('send-mail', function () {

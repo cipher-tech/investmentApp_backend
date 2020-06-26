@@ -21,7 +21,14 @@ class WidthdrawlController extends Controller
      */
     public function index()
     {
-        $widthdrawl = Widthdrawal::where("status", "pending")->get();
+    
+        $widthdrawl = Widthdrawal::where("status", "pending")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get();
+        // $widthdrawl = Widthdrawal::where("status", "pending")->with("user:coin_address")->get();
         if ($widthdrawl) {
             return response()->json($this->genetateResponse("success",$widthdrawl), 200);
          } else {
@@ -52,7 +59,8 @@ class WidthdrawlController extends Controller
             "user_id" => $request->get("id"),
             "status" => "pending",
             "slug" => $slug,
-            "trans_type" => "deposit",
+            "email" => $request->email,
+            "trans_type" => "withdrawal",
             "amount" => $request->get("amount"),
         ));
 
@@ -132,8 +140,13 @@ class WidthdrawlController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        if (Widthdrawal::whereId($request->id)->delete()) {
+            $widthdrawal = Widthdrawal::where("status", "pending")->get();
+            return response()->json($this->genetateResponse("success",["Deleted user", $widthdrawal ]), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
+         }
     }
 }

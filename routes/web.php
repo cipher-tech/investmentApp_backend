@@ -1,8 +1,8 @@
 <?php
 
+use App\Deposit;
 use App\User;
 use Illuminate\Support\Facades\Route;
-
 // use function PHPSTORM_META\type;
 
 /*
@@ -70,9 +70,38 @@ Route::get('/', function () {
     // echo getTimeInterval("2020-06-8 12:00:00"); // Returns: 1 month until
     // echo  intval(date_diff(new DateTime(date('Y-m-d H:i:s', time())), new DateTime("2020-06-08 15:10:29"))->format('%h')); // . "days";
 
-    $user = User::whereId(14)->firstOrFail();
-    echo $user->ref_code ? "yes " : "no";
+    // $user = User::whereId(14)->firstOrFail();
+    // echo $user->ref_code ? "yes " : "no";
     // echo  date_diff(new DateTime("2016-05-04 12:00:00"), new DateTime("2016-05-05 12:00:00"));
+
+    //texting with() function 
+
+    function genetateResponse($status, $data)
+    {
+        return  ["status" => $status, "data" => $data];
+    }
+    // $deposits = Deposit::where("status", "pending")
+    //     // ->select('deposits.*', 'users.dob')
+    //     ->with(['user' => function($query){
+    //         $query->select(['user.id', 'user.dob']);
+    //       }]) //("user")
+    //         // ->whereHas("user",function ($qurey){
+    //         //     $qurey->select('email')->get();
+    //         // })
+    //     ->get(array('deposits.*', 'users.dob'));
+
+    $deposits = Deposit::where("status", "accepted")
+    ->where("user_id", "4")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get();
+    if ($deposits) {
+        return response()->json(genetateResponse("success", $deposits), 200);
+    } else {
+        return response()->json(genetateResponse("failed", "could not fetch deposits"), 402);
+    }
 });
 
 Route::get('send-mail', function () {

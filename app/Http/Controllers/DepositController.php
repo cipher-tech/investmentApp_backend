@@ -19,7 +19,12 @@ class DepositController extends Controller
      */
     public function index()
     {
-        $deposits = Deposit::where("status", "pending")->get();
+        $deposits = Deposit::where("status", "pending")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get();
         if ($deposits) {
             return response()->json($this->genetateResponse("success",$deposits), 200);
          } else {
@@ -50,6 +55,7 @@ class DepositController extends Controller
             "user_id" => $request->get("id"),
             "status" => "pending",
             "slug" => $slug,
+            "email" => $request->email,
             "trans_type" => "deposit",
             "amount" => $request->get("amount"),
         ));
@@ -122,8 +128,13 @@ class DepositController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        if (Deposit::whereId($request->id)->delete()) {
+            $Deposit = Deposit::where("status", "pending")->get();
+            return response()->json($this->genetateResponse("success",["Deleted user", $Deposit ]), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
+         }
     }
 }

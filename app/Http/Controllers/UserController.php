@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Deposit;
 use Illuminate\Http\Request;
 use App\User;
+use App\Widthdrawal;
+use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use JWTAuthException;
 
-class UserController extends Controller 
+class UserController extends Controller
 {
     private function genetateResponse($status, $data)
     {
@@ -36,7 +39,17 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $user = \App\User::where('email', $request->email)->get()->first();
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|max:125',
+            'password' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $response = ['status' => false, 'data' => 'invalid input'];
+
+            return response()->json($response, 201);
+    
+        }
+        $user = \App\User::where('email', $request->email)->get()->last();
         if ($user && \Hash::check($request->password, $user->password)) // The passwords match...
         {
             $token = self::getToken($request->email, $request->password);
@@ -64,13 +77,13 @@ class UserController extends Controller
         ];
 
         // send email to user with ref code 
- // $details = [
-            //     'title' => 'Mail from ItSolutionStuff.com',
-            //     'body' => 'This is for testing email using smtp'
-            // ];
-        
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
-            
+        // $details = [
+        //     'title' => 'Mail from ItSolutionStuff.com',
+        //     'body' => 'This is for testing email using smtp'
+        // ];
+
+        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+
         $user = new \App\User($payload);
         if ($user->save()) {
 
@@ -79,7 +92,7 @@ class UserController extends Controller
                 'title' => 'Registration Successful',
                 'body' => 'Your registration was successful, log i  to access your dashboard.'
             ];
-        
+
             // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
 
             if (!is_string($token))  return response()->json(['status' => false, 'data' => 'Token generation failed'], 201);
@@ -122,7 +135,7 @@ class UserController extends Controller
             $response = $this->genetateResponse("success", $allUsers);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not Update rate");
+            $response = $this->genetateResponse("failed", "could not Update user");
             return response()->json($response, 402);
         }
     }
@@ -136,5 +149,99 @@ class UserController extends Controller
             $response = $this->genetateResponse("failed", "could not get user");
             return response()->json($response, 402);
         }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = User::whereEmail($request->get("email"))->firstOrFail();
+        $password = \uniqid();
+        $user->password = \Hash::make($password);
+
+        if ($user->save()) {
+            $response = $this->genetateResponse("success", "Password reset successful");
+            
+            $uesrEmail = [
+                'title' => 'Password reset Successful',
+                'body' => 'Your Password reset was successful, use this password to log in '. $password
+            ];
+
+            \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($uesrEmail));
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse(false, "could not reset Password");
+            return response()->json($response, 402);
+        }
+    }
+
+    public function updateUserInfo(Request $request)
+    {
+        $user = User::where('slug', $request->slug)->firstOrFail();
+
+        $user->email = $request->get("email")? $request->get("email") : $user->email  ;
+        $user->password = $request->get("password")? $request->get("password") : $user->password ;
+        $user->phone_no = $request->get("phone_no")? $request->get("phone_no") : $user->phone_no ;
+        $user->first_name = $request->get("first_name")? $request->get("first_name") : $user->first_name ;
+        $user->last_name = $request->get("last_name")? $request->get("last_name") :  $user->last_name;
+        $user->dob = $request->get("dob")? $request->get("dob") :  $user->dob;
+        $user->coutry = $request->get("coutry")? $request->get("coutry") :  $user->coutry;
+        $user->state = $request->get("state")? $request->get("state") : $user->state;
+        $user->city = $request->get("city")? $request->get("city") : $user->city;
+        $user->coin_address = $request->get("coin_address")? $request->get("coin_address") :  $user->coin_address;
+        $user->zip_code = $request->get("zip_code")? $request->get("zip_code") :  $user->zip_code;
+       
+        if ($user->save()) {
+            $user = User::whereId($user->id)->firstOrFail();
+            $updatedUsers =  $user = User::whereSlug($request->get("slug"))->firstOrFail();;
+            $response = $this->genetateResponse("success", $updatedUsers);
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not Update user");
+            return response()->json($response, 402);
+        }
+    }
+    public function updateUserPassword(Request $request)
+    {
+        $user = User::where('slug', $request->slug)->firstOrFail();
+
+        if ($user && !\Hash::check($request->oldPassword, $user->password)) // The passwords match...
+        {
+            $user->password = \Hash::make($request->newPassword);
+            $response =  $this->genetateResponse("success", "Password Updated");
+            return $user->save() ?  response()->json($response, 200) :  response()->json("failed update", 402);
+
+        } else{
+            $response = $this->genetateResponse("failed", "Password do not match");
+            return response()->json($response, 200);
+        }
+    }
+
+    public function userTransactions(Request $request)
+    {
+        
+        $deposits = collect( Deposit::where("user_id", $request->id)
+        ->where("status", "accepted")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get());
+
+        $widthdrawl = collect(Widthdrawal::where("user_id", $request->id)
+        ->where("status", "accepted")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get());
+
+        // $history = $widthdrawl->combine($deposits);
+        $history = $widthdrawl->merge($deposits)->sortBy("created_at")->toArray();
+        // $tags = array_merge($widthdrawl, $deposits);
+
+        if ($widthdrawl && $deposits) {
+            return response()->json($this->genetateResponse("success",$history), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not fetch history"), 402);
+         }
     }
 }
