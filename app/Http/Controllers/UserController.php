@@ -76,13 +76,13 @@ class UserController extends Controller
             "ref_code"  => $request->refCode ? $request->refCode : null,
         ];
 
-        // send email to user with ref code 
-        // $details = [
-        //     'title' => 'Mail from ItSolutionStuff.com',
-        //     'body' => 'This is for testing email using smtp'
-        // ];
+    
+        $details = [
+            'title' => 'Successful Registration ',
+            'body' =>  "this is to confirm your registration."
+        ];
 
-        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+        \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
 
         $user = new \App\User($payload);
         if ($user->save()) {
