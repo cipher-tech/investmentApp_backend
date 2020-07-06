@@ -103,7 +103,7 @@ class PlanController extends Controller
 
         if ($plan->save()) {
             $allPlan = Plan::all();
-            $response = $this->genetateResponse("success",  [$allPlan, "UpdatedSuccessfully"] );
+            $response = $this->genetateResponse("success",  [$allPlan, "Updated Successfully"] );
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not Update rate");

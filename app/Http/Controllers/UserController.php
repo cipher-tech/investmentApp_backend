@@ -77,12 +77,19 @@ class UserController extends Controller
         ];
 
     
-        $details = [
-            'title' => 'Successful Registration ',
-            'body' =>  "this is to confirm your registration."
+        // $details = [
+        //     'title' => 'Successful Registration ',
+        //     'body' =>  "this is to confirm your registration."
+        // ];
+
+        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+
+        $details1 = [
+            'title' => 'Refcode activated ',
+            'body' =>  "Your reference was activated. As a result you'll 5% of their first plan."
         ];
 
-        \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details1));
 
         $user = new \App\User($payload);
         if ($user->save()) {
@@ -90,7 +97,7 @@ class UserController extends Controller
             $token = self::getToken($request->email, $request->password); // generate user token
             $uesrEmail = [
                 'title' => 'Registration Successful',
-                'body' => 'Your registration was successful, log i  to access your dashboard.'
+                'body' => 'Your registration was successful, login  to access your dashboard.'
             ];
 
             // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
@@ -203,7 +210,7 @@ class UserController extends Controller
     {
         $user = User::where('slug', $request->slug)->firstOrFail();
 
-        if ($user && !\Hash::check($request->oldPassword, $user->password)) // The passwords match...
+        if ($user && \Hash::check($request->oldPassword, $user->password)) // The passwords match...
         {
             $user->password = \Hash::make($request->newPassword);
             $response =  $this->genetateResponse("success", "Password Updated");
