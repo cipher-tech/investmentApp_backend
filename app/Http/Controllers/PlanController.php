@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\plan;
 use App\Plans_users;
+use Illuminate\Support\Facades\Validator;
 use App\User;
 
 class PlanController extends Controller
@@ -124,6 +125,16 @@ class PlanController extends Controller
 
     public function registerPlan(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'userId' => 'required|min:1|max:20',
+            'amount' => 'required|min:2|max:11',
+            'plan' => 'required|min:5|max:25|',
+        ]);
+        if ($validator->fails()) {
+            $response = $this->genetateResponse("failed","Validation failed");
+            return response()->json($response, 402);
+        }
+
         $plan = Plan::wherePlan($request->plan)->firstOrFail();
         $user = User::whereId($request->userId)->firstOrFail();
 
@@ -147,9 +158,9 @@ class PlanController extends Controller
             
                 // \Mail::to(env($user->email))->send(new \App\Mail\DepositMail($details));
 
-            if($user->ref_code){
+            if($user->ref_code){ 
                 $bonus = 0.05 * $request->amount;
-                $referrer  = User::whereSlug($user->ref_code)->firstOrFail();
+                $referrer  = User::where("slug", $user->ref_code )->firstOrFail();
                 $referrer ->wallet_balc += $bonus;
                 $referrer ->save();
                 

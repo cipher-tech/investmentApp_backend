@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Deposit;
 use App\User;
+use Illuminate\Support\Facades\Validator;
+
 class DepositController extends Controller
 {
 
@@ -50,6 +52,15 @@ class DepositController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|min:1|max:40',
+            'amount' => 'required|min:2|max:40',
+            'email' => 'required|min:2|max:125|email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($this->genetateResponse("failed","Validation failed"), 402);
+        }
+
         $slug = uniqid();
         $deposit = new Deposit(array(
             "user_id" => $request->get("id"),

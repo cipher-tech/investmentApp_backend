@@ -35,6 +35,7 @@ class RateController extends Controller
             'current_rate' => $request->get('currentRate'), 
             'buying' => $request->get('buying'), 
             'selling' => $request->get('selling'), 
+            'quantity' => $request->get('quantity'), 
         ));
 
         if ($rate->save()) {
@@ -92,9 +93,10 @@ class RateController extends Controller
     {
         $rate = Rate::whereId($request->get("rateId"))->firstOrFail();
 
-        $rate->current_rate = $request->get("currentRate");
+        // $rate->current_rate = $request->get("currentRate");
         $rate->buying = $request->get("buying");
         $rate->selling = $request->get("selling");
+        $rate->quantity = $request->get("quantity");
 
         if ($rate->save()) {
             $allRates = Rate::all();
@@ -112,8 +114,13 @@ class RateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($request)
     {
-        //
+        if (Rate::whereId($request->id)->delete()) {
+            $Rate = Rate::all();
+            return response()->json($this->genetateResponse("success",["Deleted rate", $Rate ]), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not delete rate"), 402);
+         }
     }
 }

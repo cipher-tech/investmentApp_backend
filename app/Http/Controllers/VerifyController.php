@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Verification;
+use Illuminate\Support\Facades\Validator;
+
 use App\User;
 
 class VerifyController extends Controller
@@ -19,6 +21,24 @@ class VerifyController extends Controller
     }
 
     public function create(Request $request){
+        Validator::extend('is_image_valid',function($attribute, $value, $params, $validator) {
+            $image = base64_decode($value);
+            $f = finfo_open();
+            $result = finfo_buffer($f, $image, FILEINFO_MIME_TYPE);
+            return $result == 'image/png' || 'image/jpg' || 'image/jpeg';
+        });
+        $validator = Validator::make($request->input(), [
+            'selfi' => 'is_image_valid',
+            'idCard' => 'is_image_valid',
+            'address' => 'is_image_valid',
+            // 'idCard' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1048',
+            // 'address' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1048',
+        ]);
+        if ($validator->fails()) {
+            $response = $this->genetateResponse("failed",['invalid input', $validator->errors()]);
+            return response()->json($response, 402);
+        }
+        
         if ($request->get('selfi') && $request->get('address') && $request->get('idCard')) {
             $selfi = $request->get('selfi');
             $selfiPath = time() . 'selfi.' . explode('/', explode(':', substr($selfi, 0, strpos($selfi, ';')))[1])[1];

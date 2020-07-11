@@ -40,8 +40,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|max:125',
-            'password' => 'required'
+            'email' => 'required|max:125|email',
+            'password' => 'required|max:125'
         ]);
         if ($validator->fails()) {
             $response = ['status' => false, 'data' => 'invalid input'];
@@ -65,6 +65,20 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|max:125|email',
+            'password' => 'required|min:6|max:40',
+            'first_name' => 'required|min:4|max:40|alpha',
+            'last_name' => 'required|min:4|max:40|alpha',
+            'phone' => 'required|min:4|max:40',
+            'ref_code' => 'min:4|max:40',
+        ]);
+        if ($validator->fails()) {
+            $response = ['status' => false, 'data' => ['invalid input', $validator->errors()]];
+
+            return response()->json($response, 201);
+    
+        }
         $payload = [
             'password' => \Hash::make($request->password),
             'email' => $request->email,
@@ -77,17 +91,17 @@ class UserController extends Controller
         ];
 
     
-        // $details = [
-        //     'title' => 'Successful Registration ',
-        //     'body' =>  "this is to confirm your registration."
-        // ];
+        $details = [
+            'title' => 'Successful Registration ',
+            'body' =>  "this is to confirm your registration."
+        ];
 
         // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
 
-        $details1 = [
-            'title' => 'Refcode activated ',
-            'body' =>  "Your reference was activated. As a result you'll 5% of their first plan."
-        ];
+        // $details1 = [
+        //     'title' => 'Refcode activated ',
+        //     'body' =>  "Your reference was activated. As a result you'll 5% of their first plan."
+        // ];
 
         // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details1));
 
@@ -148,6 +162,7 @@ class UserController extends Controller
     }
     public function getUser(Request $request)
     {
+        
         $user = User::whereId($request->get("id"))->firstOrFail();
         if ($user) {
             $response = $this->genetateResponse("success", $user);
@@ -160,6 +175,15 @@ class UserController extends Controller
 
     public function resetPassword(Request $request)
     {
+        
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|max:125|email',
+        ]);
+        if ($validator->fails()) {
+            $response = $this->genetateResponse(false, "could not reset Password");
+            return response()->json($response, 402);
+        }
+
         $user = User::whereEmail($request->get("email"))->firstOrFail();
         $password = \uniqid();
         $user->password = \Hash::make($password);
@@ -172,7 +196,7 @@ class UserController extends Controller
                 'body' => 'Your Password reset was successful, use this password to log in '. $password
             ];
 
-            \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($uesrEmail));
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($uesrEmail));
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse(false, "could not reset Password");
@@ -182,6 +206,24 @@ class UserController extends Controller
 
     public function updateUserInfo(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'max:125|email',
+            'password' => 'min:6|max:40',
+            'first_name' => 'min:4|max:40|alpha',
+            'last_name' => 'min:4|max:40|alpha',
+            'phone' => 'required|min:4|max:40',
+            'dob' => 'min:4|max:40',
+            'coutry' => 'min:4|max:40',
+            'state' => 'min:4|max:40',
+            'city' => 'min:4|max:40',
+            'zip_code' => 'min:4|max:40',
+            'coin_address' => 'min:4|max:100',
+        ]);
+        if ($validator->fails()) {
+            $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
+            return response()->json($response, 402);
+        }
+
         $user = User::where('slug', $request->slug)->firstOrFail();
 
         $user->email = $request->get("email")? $request->get("email") : $user->email  ;
@@ -208,6 +250,15 @@ class UserController extends Controller
     }
     public function updateUserPassword(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'oldPassword' => 'required|min:6|max:40',
+            'newPassword' => 'required|min:6|max:40',
+        ]);
+        if ($validator->fails()) {
+            $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
+            return response()->json($response, 200);
+        }
+
         $user = User::where('slug', $request->slug)->firstOrFail();
 
         if ($user && \Hash::check($request->oldPassword, $user->password)) // The passwords match...

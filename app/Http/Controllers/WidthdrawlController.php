@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Widthdrawal;
 use App\User;
+use Illuminate\Support\Facades\Validator;
+
 
 class WidthdrawlController extends Controller
 {
@@ -54,6 +56,15 @@ class WidthdrawlController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|min:1|max:40',
+            'amount' => 'required|min:2|max:40',
+            'email' => 'required|min:2|max:125|email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($this->genetateResponse("failed","Validation failed"), 402);
+        }
+
         $slug = uniqid();
         $widthdrawal = new Widthdrawal (array(
             "user_id" => $request->get("id"),
