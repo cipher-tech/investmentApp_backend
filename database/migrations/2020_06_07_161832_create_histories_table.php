@@ -21,6 +21,9 @@ class CreateHistoriesTable extends Migration
             $table->integer("earnings");
             $table->integer("duration");
             $table->integer("rate");
+            $table->string("type");
+            $table->string("status");
+            $table->string("image");
             $table->integer("withdrawl");
             $table->integer("deposit");
             $table->timestamps();
