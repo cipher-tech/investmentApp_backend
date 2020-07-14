@@ -45,7 +45,9 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post("users/verify", "VerifyController@verifyUsers");
     Route::post("users/verify-delete", "VerifyController@destory");
 
+    Route::post("users/userSellCoin", "HistoryController@userSellCoin");
     Route::post("users/userBuyCoin", "HistoryController@userBuyCoin");
+    Route::post("users/userSellCard", "HistoryController@userSellCard");
 
 
     Route::post("users/deposit", "DepositController@store");
