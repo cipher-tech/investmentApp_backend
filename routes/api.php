@@ -48,6 +48,9 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post("users/userSellCoin", "HistoryController@userSellCoin");
     Route::post("users/userBuyCoin", "HistoryController@userBuyCoin");
     Route::post("users/userSellCard", "HistoryController@userSellCard");
+    Route::get("admin/getOrders", "HistoryController@index");
+    Route::post("admin/confirmTransaction", "HistoryController@confirmTransaction");
+    Route::post("admin/destroyTransaction", "HistoryController@destroyTransaction");
 
 
     Route::post("users/deposit", "DepositController@store");

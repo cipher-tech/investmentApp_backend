@@ -11,8 +11,24 @@ class HistoryController extends Controller
     {
         return  ["status" => $status, "data" => $data];
     }
+    public function index()
+    {
 
-    public function userSellCoin(Request $request){
+        $history = History::where("status", "pending")
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(array('id','email', 'phone_no', 'first_name'));
+            }])
+            ->get();
+        // $history = History::where("status", "pending")->with("user:coin_address")->get();
+        if ($history) {
+            return response()->json($this->genetateResponse("success", $history), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not fetch deposits"), 402);
+        }
+    }
+    public function userSellCoin(Request $request)
+    {
         $slug = uniqid() . uniqid();
         $history = new History(array(
             "user_id" => $request->user_id,
@@ -25,14 +41,15 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
-            $response = $this->genetateResponse("success", $slug );
+            $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
     }
-    public function userBuyCoin(Request $request){
+    public function userBuyCoin(Request $request)
+    {
         $slug = uniqid() . uniqid();
         $history = new History(array(
             "user_id" => $request->user_id,
@@ -46,21 +63,22 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
-            $response = $this->genetateResponse("success", $slug );
+            $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
     }
-    public function userSellCard(Request $request){
+    public function userSellCard(Request $request)
+    {
         $slug = uniqid() . uniqid();
 
         if ($request->get('cardImage')) {
             $cardImage = $request->get('cardImage');
             $cardImagePath = time() . 'cardImage.' . explode('/', explode(':', substr($cardImage, 0, strpos($cardImage, ';')))[1])[1];
             \Image::make($request->get('cardImage'))->save(public_path('images\\') . $cardImagePath);
-        }else{
+        } else {
             $response = $this->genetateResponse("failed", "could not save image");
             return response()->json($response, 402);
         }
@@ -69,7 +87,7 @@ class HistoryController extends Controller
             "slug" => uniqid(),
             "amount" => $request->amount,
             "status" => "pending",
-            "image" => $cardImagePath ,
+            "image" => $cardImagePath,
             "type" => $request->type,
             "action" => $request->action,
             "address" => $request->card_id,
@@ -77,11 +95,41 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
-            $response = $this->genetateResponse("success", $slug );
+            $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
+    }
+
+    public function confirmTransaction(Request $request)
+    {
+        $history = History::whereId($request->id)->firstOrFail();
+        $history->status = "accepted";
+
+        if ($history->save()) {
+            $histories = History::where("status", "pending")
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(array('id','email', 'phone_no', 'first_name'));
+            }])
+            ->get();
+            $response = $this->genetateResponse("success",["Updated orders", $histories]);
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not update order");
+            return response()->json($response, 402);
+        }
+    }
+    
+    public function destroyTransaction(Request $request)
+    {
+        if (History::whereId($request->id)->delete()) {
+            $History = History::where("status", "pending")->get();
+            return response()->json($this->genetateResponse("success",["Deleted Order", $History ]), 200);
+         } else {
+            return response()->json($this->genetateResponse("failed","could not delete Order"), 402);
+         }
     }
 }

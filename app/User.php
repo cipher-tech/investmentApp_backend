@@ -72,7 +72,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function history()
     {
-        return $this->hasMany('App\History');
+        return $this->hasMany(History::class);
     }
 
     public function plan()
