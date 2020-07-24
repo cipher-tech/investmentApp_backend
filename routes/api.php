@@ -99,3 +99,6 @@ Route::get('send-mail', function () {
 
 //https://coin-app-ackend.herokuapp.com/ | https://git.heroku.com/coin-app-ackend.git
 //https://coin-app-ackend.herokuapp.com/ | https://git.heroku.com/coin-app-ackend.git
+// db-password = y.e9KWCpRci_YMj
+// db-name = coin_app
+// db-username = nickchibuikem
