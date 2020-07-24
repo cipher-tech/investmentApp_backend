@@ -96,3 +96,6 @@ Route::get('send-mail', function () {
     dd("Email is Sent.");
     return "sent";
 });
+
+//https://coin-app-ackend.herokuapp.com/ | https://git.heroku.com/coin-app-ackend.git
+//https://coin-app-ackend.herokuapp.com/ | https://git.heroku.com/coin-app-ackend.git
