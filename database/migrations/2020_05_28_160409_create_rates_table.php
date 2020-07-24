@@ -18,6 +18,7 @@ class CreateRatesTable extends Migration
             $table->string("name");
             $table->integer("current_rate");
             $table->string("type")->nullable();
+            $table->json("attributes")->nullable();
             $table->integer("buying")->nullable();
             $table->integer("selling")->nullable();
 

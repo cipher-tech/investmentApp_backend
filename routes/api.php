@@ -70,6 +70,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post("admin/add-rate", "RateController@create");
     Route::post("admin/update-rate", "RateController@update");
 
+    Route::post("admin/add-giftcard", "RateController@createGiftcard");
+
 });
 Route::group([],function () {
     // ['middleware' => 'api-header']

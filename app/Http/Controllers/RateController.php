@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Rate;
+use Illuminate\Support\Facades\Validator;
 
 class RateController extends Controller
 {
@@ -44,6 +45,30 @@ class RateController extends Controller
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not add rate");
+            return response()->json($response, 402);
+        }
+        
+    }
+    public function createGiftcard(Request $request){
+        $validator = Validator::make($request->all(), [
+            'giftcardName' => 'required|max:125|',
+            'type' => 'required|max:125|',
+            'options' => 'min:4',
+            
+        ]);
+        $rate = new Rate(array(
+            'name' => $request->get('giftcardName'), 
+            'type' => $request->get('type'), 
+            'attributes' => $request->get('options'), 
+            'quantity' => $request->get('quantity'), 
+        ));
+
+        if ($rate->save()) {
+            $allRates = Rate::all();
+            $response = $this->genetateResponse("success", $allRates );
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not add card");
             return response()->json($response, 402);
         }
         
