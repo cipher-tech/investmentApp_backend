@@ -71,6 +71,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post("admin/update-rate", "RateController@update");
 
     Route::post("admin/add-giftcard", "RateController@createGiftcard");
+    Route::post("admin/edit-giftcard", "RateController@editGiftcard");
 
 });
 Route::group([],function () {

@@ -73,6 +73,29 @@ class RateController extends Controller
         }
         
     }
+    public function editGiftcard(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:125|',
+            'type' => 'required|max:125|',
+        ]);
+
+        $rate = Rate::whereId($request->id)->firstOrFail();
+        
+        $rate->name = $request->name;
+        $rate->type = $request->type;
+        $rate->attributes = $request->get('attributes');
+        $rate->quantity = $request->quantity;
+
+        if ($rate->save()) {
+            $allRates = Rate::all();
+            $response = $this->genetateResponse("success", $allRates );
+            return response()->json($response, 200);
+        } else {
+            $response = $this->genetateResponse("failed", "could not add card");
+            return response()->json($response, 402);
+        }
+        
+    }
 
     /**
      * Store a newly created resource in storage.
