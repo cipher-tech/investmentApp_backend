@@ -33,7 +33,9 @@ class RateController extends Controller
         $rate = new Rate(array(
             'name' => $request->get('name'), 
             'type' => $request->get('type'), 
-            'current_rate' => $request->get('currentRate'), 
+            'class' => $request->get('classInput'), 
+            'from' => $request->get('from'), 
+            'to' => $request->get('to'), 
             'buying' => $request->get('buying'), 
             'selling' => $request->get('selling'), 
             'quantity' => $request->get('quantity'), 
@@ -76,7 +78,7 @@ class RateController extends Controller
     public function editGiftcard(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:125|',
-            'type' => 'required|max:125|',
+            // 'type' => 'required|max:125|',
         ]);
 
         $rate = Rate::whereId($request->id)->firstOrFail();
@@ -145,6 +147,9 @@ class RateController extends Controller
         $rate->buying = $request->get("buying");
         $rate->selling = $request->get("selling");
         $rate->quantity = $request->get("quantity");
+        $rate->class = $request->get("class");
+        $rate->from = $request->get("from");
+        $rate->to = $request->get("to");
 
         if ($rate->save()) {
             $allRates = Rate::all();

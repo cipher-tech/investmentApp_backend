@@ -83,7 +83,7 @@ class HistoryController extends Controller
             return response()->json($response, 402);
         }
         $history = new History(array(
-            "user_id" => $request->user_id,
+            "user_id" => $request->user_id || "guest",
             "slug" => uniqid(),
             "amount" => $request->amount,
             "status" => "pending",
