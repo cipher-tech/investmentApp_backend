@@ -76,6 +76,7 @@ Route::get('/', function () {
 
     //texting with() function 
 
+    // echo intval(date_diff( new \DateTime("2016-05-07 23:55:00"), new \DateTime("2016-05-07 23:59:00"))->format('%i'));
     function genetateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
