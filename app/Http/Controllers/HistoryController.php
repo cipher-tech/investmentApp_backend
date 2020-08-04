@@ -31,7 +31,7 @@ class HistoryController extends Controller
     {
         $slug = uniqid() . uniqid();
         $history = new History(array(
-            "user_id" => $request->user_id || null,
+            "user_id" => $request->user_id || "guest",
             "slug" => uniqid(),
             "amount" => $request->amount,
             "status" => "pending",
@@ -53,11 +53,12 @@ class HistoryController extends Controller
     {
         $slug = uniqid() . uniqid();
         $history = new History(array(
-            "user_id" => $request->user_id ,
+            "user_id" => $request->user_id || "guest" ,
             "slug" => uniqid(),
             "amount" => $request->amount,
             "status" => "pending",
             "type" => $request->type,
+            "mode_of_payment" => $request->modeOfPayment,
             "action" => $request->action,
             "address" => $request->address,
             "reference_id" => $slug,

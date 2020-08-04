@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Deposit;
+use App\History;
 use Illuminate\Http\Request;
 use App\User;
 use App\Widthdrawal;
@@ -277,7 +278,7 @@ class UserController extends Controller
     {
         
         $deposits = collect( Deposit::where("user_id", $request->id)
-        ->where("status", "accepted")
+        // ->where("status", "accepted")
         ->with(['user' => function ($query) {
             // selecting fields from user table
             $query->select(['id', 'state', "coin_address"]);
@@ -285,7 +286,13 @@ class UserController extends Controller
         ->get());
 
         $widthdrawl = collect(Widthdrawal::where("user_id", $request->id)
-        ->where("status", "accepted")
+        // ->where("status", "accepted")
+        ->with(['user' => function ($query) {
+            // selecting fields from user table
+            $query->select(['id', 'state', "coin_address"]);
+        }])
+        ->get());
+        $histories = collect(History::where("user_id", $request->id)
         ->with(['user' => function ($query) {
             // selecting fields from user table
             $query->select(['id', 'state', "coin_address"]);
@@ -293,7 +300,7 @@ class UserController extends Controller
         ->get());
 
         // $history = $widthdrawl->combine($deposits);
-        $history = $widthdrawl->merge($deposits)->sortBy("created_at")->toArray();
+        $history = $widthdrawl->merge($deposits)->merge($histories)->sortBy("created_at")->toArray();
         // $tags = array_merge($widthdrawl, $deposits);
 
         if ($widthdrawl && $deposits) {
