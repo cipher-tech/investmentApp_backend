@@ -101,6 +101,18 @@ class VerifyController extends Controller
         if($user->save()){
             $verifyContent = Verification::whereId($request->verifyId)->firstOrFail();
             $verifyContent->status = "verified";
+            $uesrEmail = [
+                'name' => $user->last_name,
+                'title' => 'Account Verified',
+                "header" => "Your account has been verified",
+                'body' => [
+                    'Your account has been verified. Additional features have be added',
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+        
+            \Mail::to($user->email)->send(new \App\Mail\GenMailer($uesrEmail));
+            
              if ($verifyContent->save()) {
                 $users = Verification::where("status", "unverified")->get();
                 return response()->json($this->genetateResponse("success",["update user", $users ]), 200);

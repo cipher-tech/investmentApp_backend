@@ -122,8 +122,8 @@ class UserController extends Controller
                 'body' =>   [
                     "This is to confirm your registration. Please kindly login with the same
                     credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
-                    "To start Earning, you need to make a deposit",
-                    "Choose an investment plan, invest and Earn"
+                    // "To start Earning, you need to make a deposit",
+                    // "Choose an investment plan, invest and Earn"
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
@@ -202,9 +202,9 @@ class UserController extends Controller
                 'title' => 'Password reset Successful',
                 "header" => "Your Password reset was Successful",
                 'body' => [
-                    'Your Password reset was successful, use this password to log in ' . $password,
-                    "To start Earning, you need to make a deposit",
-                    "Choose an investment plan, invest and Earn"
+                    'Your Password reset was successful, use this password to log in: ' . $password,
+                    // "To start Earning, you need to make a deposit",
+                    // "Choose an investment plan, invest and Earn"
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
@@ -220,23 +220,23 @@ class UserController extends Controller
 
     public function updateUserInfo(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'max:125|email',
-            'password' => 'min:6|max:40',
-            'first_name' => 'min:4|max:40|alpha',
-            'last_name' => 'min:4|max:40|alpha',
-            'phone' => 'required|min:4|max:40',
-            'dob' => 'min:4|max:40',
-            'coutry' => 'min:4|max:40',
-            'state' => 'min:4|max:40',
-            'city' => 'min:4|max:40',
-            'zip_code' => 'min:4|max:40',
-            'coin_address' => 'min:4|max:100',
-        ]);
-        if ($validator->fails()) {
-            $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
-            return response()->json($response, 402);
-        }
+        // $validator = Validator::make($request->all(), [
+        //     'email' => 'max:125|email',
+        //     'password' => 'min:6|max:40',
+        //     'first_name' => 'min:4|max:40|alpha',
+        //     'last_name' => 'min:4|max:40|alpha',
+        //     'phone' => 'required|min:4|max:40',
+        //     'dob' => 'min:4|max:40',
+        //     'coutry' => 'min:4|max:40',
+        //     'state' => 'min:4|max:40',
+        //     'city' => 'min:4|max:40',
+        //     'zip_code' => 'min:4|max:40',
+        //     'coin_address' => 'min:4|max:100',
+        // ]);
+        // if ($validator->fails()) {
+        //     $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
+        //     return response()->json($response, 402);
+        // // }
 
         $user = User::where('slug', $request->slug)->firstOrFail();
 

@@ -43,22 +43,27 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
+
             // $user = User::whereId($request->get("id"))->firstOrFail();
             $details = [
-                'name' => $user->last_name,
-                'title' => 'Selling coin',
-                "header" => " Registration Successful",
+                'name' => "Admin",
+                'title' => 'User sell coin order',
+                "header" => "Sell Coin Order",
                 'body' =>   [
-                    "This is to confirm your registration. Please kindly login with the same
-                    credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
-                    "To start Earning, you need to make a deposit",
-                    "Choose an investment plan, invest and Earn"
+                    "A user just placed a sell coin order,",
+                    "See details below: ",
+                    "id: ". $slug,
+                    "Amount: ". $request->amount,
+                    "mode_of_payment: ". $request->modeOfPayment,
+                    "status". "pending",
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\GenMailer($details));
             $response = $this->genetateResponse("success", $slug);
+
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");
@@ -81,7 +86,25 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
+            $details = [
+                'name' => "Admin",
+                'title' => 'User buy coin order',
+                "header" => "Buy Coin Order",
+                'body' =>   [
+                    "A user just placed a buy coin order,",
+                    "See details below: ",
+                    "id: ". $slug,
+                    "Amount: ". $request->amount,
+                    "mode_of_payment: ". $request->modeOfPayment,
+                    "status". "pending",
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+
             $response = $this->genetateResponse("success", $slug);
+
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+            // $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");
@@ -114,7 +137,27 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
+            $details = [
+                'name' => "Admin",
+                'title' => 'User sell card order',
+                "header" => "Sell Card Order",
+                'body' =>   [
+                    "A user just placed a sell card order,",
+                    "See details below: ",
+                    "id: ". $slug,
+                    "email: ". $request->email,
+                    "card_id: ". $request->card_id,
+                    "Amount: ". $request->amount,
+                    "mode_of_payment: ". $request->modeOfPayment,
+                    "status". "pending",
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+
             $response = $this->genetateResponse("success", $slug);
+
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+            // $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed", "could not place order");

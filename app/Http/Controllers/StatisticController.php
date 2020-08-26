@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Deposit;
 use App\History;
+use App\Plans_users;
 use App\Statistic;
 use App\User;
 use Illuminate\Http\Request;
@@ -20,6 +21,23 @@ class StatisticController extends Controller
         $stats->no_visits += 1;
 
         $stats->save();
+    }
+
+    public function getCoinAddress(){
+        $Admin = User::where('role', "admin")->firstOrFail();
+        $response = $this->genetateResponse("success",$Admin->coin_address);
+        return response()->json($response, 201);
+    }
+
+    public function getUserStats(Request $request)
+    {
+        $userPlan = Plans_users::where("user_id", $request->id)->first();
+        if($userPlan){
+            $response = $this->genetateResponse("success", [$userPlan->amount,$userPlan->earnings]);
+        }else{
+            $response = $this->genetateResponse("success", null);
+        }
+        return response()->json($response, 201);
     }
 
     public function getAdminStats()
