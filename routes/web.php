@@ -2,7 +2,9 @@
 
 use App\Deposit;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
+// use Cabon
 // use function PHPSTORM_META\type;
 
 /*
@@ -76,7 +78,11 @@ Route::get('/', function () {
 
     //texting with() function 
 
-    // echo intval(date_diff( new \DateTime("2016-05-07 23:55:00"), new \DateTime("2016-05-07 23:59:00"))->format('%i'));
+    // echo intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime("2020-07-09 11:37:44"))->format('%h')) ;
+    // echo date('Y-m-d H:i:s', time());
+    $date = Carbon::now("West Central Africa");
+    $date2 = Carbon::createFromTimeString("2020-07-09 10:43:44");
+    echo $date->diff($date2)->format("%H");
     function genetateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
@@ -91,18 +97,18 @@ Route::get('/', function () {
     //         // })
     //     ->get(array('deposits.*', 'users.dob'));
 
-    $deposits = Deposit::where("status", "accepted")
-    ->where("user_id", "4")
-        ->with(['user' => function ($query) {
-            // selecting fields from user table
-            $query->select(['id', 'state', "coin_address"]);
-        }])
-        ->get();
-    if ($deposits) {
-        return response()->json(genetateResponse("success", $deposits), 200);
-    } else {
-        return response()->json(genetateResponse("failed", "could not fetch deposits"), 402);
-    }
+    // $deposits = Deposit::where("status", "accepted")
+    // ->where("user_id", "4")
+    //     ->with(['user' => function ($query) {
+    //         // selecting fields from user table
+    //         $query->select(['id', 'state', "coin_address"]);
+    //     }])
+    //     ->get();
+    // if ($deposits) {
+    //     return response()->json(genetateResponse("success", $deposits), 200);
+    // } else {
+    //     return response()->json(genetateResponse("failed", "could not fetch deposits"), 402);
+    // }
 });
 
 Route::get('send-mail', function () {
