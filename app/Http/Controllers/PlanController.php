@@ -57,6 +57,7 @@ class PlanController extends Controller
 
         if ($rate->save()) {
             $allPlans = Plan::all();
+            
             $response = $this->genetateResponse("success", $allPlans);
             return response()->json($response, 200);
         } else {
@@ -152,11 +153,29 @@ class PlanController extends Controller
                 ]
                 );
                 $details = [
+                    'name' => $user->last_name,
                     'title' => 'Plan subcribtion successful',
-                    'body' => 'Your subcribtion for '. $request->plan . " was successful"
+                    "header" => "Your subcribtion to the ". $plan->plan." plan was successful",
+                    'body' =>   [
+                        'Your subcribtion for '. $request->plan . " plan was successful",
+                        "your intrest will be added according to the period specified on the plan details.",
+                        "Please see plan details for more. Thank you"
+                    ],
+                    "companyName" => env('COMPANY_NAME', '')
                 ];
-            
-                // \Mail::to(env($user->email))->send(new \App\Mail\DepositMail($details));
+
+                $admin = [
+                    'name' => "Admin",
+                    'title' => 'A new Plan was subcribed successfully',
+                    "header" => "A new subcribtion to the". $plan->plan."was successful",
+                    'body' =>   [
+                        'Plan: '. $request->plan,
+                        'amount: '. $request->amount,
+                        'User email: '.  $user->email,
+                        'Name: '.  $user->last_name,
+                    ],
+                    "companyName" => env('COMPANY_NAME', '')
+                ];
 
             if($user->ref_code){ 
                 $bonus = 0.05 * $request->amount;
@@ -167,12 +186,18 @@ class PlanController extends Controller
                 $user->ref_code = null;
                 $user->save();
 
-                $details = [
+                $details1 = [
+                    'name' => $referrer->last_name,
                     'title' => 'Referrer Bonus ',
-                    'body' => 'Your referrer link was used, hence you will get a bonus of 5% off the subcribers first plan'
+                    "header" => "Your referrer link was used",
+                    'body' =>   [
+                        'Your referrer link was used, hence you will get a bonus of 5% off the subcribers first plan',
+                        "Please see your dashboard for more. Thank you"
+                    ],
+                    "companyName" => env('COMPANY_NAME', '')
                 ];
             
-                // \Mail::to(env($user->email))->send(new \App\Mail\DepositMail($details));
+                \Mail::to($referrer->email)->send(new \App\Mail\GenMailer($details1));
                 // send email
             }
 
@@ -186,6 +211,10 @@ class PlanController extends Controller
             }
 
             $response = $this->genetateResponse("success", "Plan Successfully Subscribed");
+
+            \Mail::to($user->email)->send(new \App\Mail\GenMailer($details));
+            
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($admin));
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse("failed","Already on a plan");

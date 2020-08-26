@@ -22,16 +22,16 @@ class DepositController extends Controller
     public function index()
     {
         $deposits = Deposit::where("status", "pending")
-        ->with(['user' => function ($query) {
-            // selecting fields from user table
-            $query->select(['id', 'state', "coin_address"]);
-        }])
-        ->get();
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(['id', 'state', "coin_address"]);
+            }])
+            ->get();
         if ($deposits) {
-            return response()->json($this->genetateResponse("success",$deposits), 200);
-         } else {
-            return response()->json($this->genetateResponse("failed","could not fetch deposits"), 402);
-         }
+            return response()->json($this->genetateResponse("success", $deposits), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not fetch deposits"), 402);
+        }
     }
 
     /**
@@ -41,7 +41,6 @@ class DepositController extends Controller
      */
     public function create()
     {
-       
     }
 
     /**
@@ -58,7 +57,7 @@ class DepositController extends Controller
             'email' => 'required|min:2|max:125|email',
         ]);
         if ($validator->fails()) {
-            return response()->json($this->genetateResponse("failed","Validation failed"), 402);
+            return response()->json($this->genetateResponse("failed", "Validation failed"), 402);
         }
 
         $slug = uniqid();
@@ -74,17 +73,24 @@ class DepositController extends Controller
         if ($deposit->save()) {
             
             $uesrEmail = [
+                'name' => 'Admin',
                 'title' => 'New deposit Request',
-                'body' => 'A new deposit request has been placed. Check your dashboard. <br/> transction id'. $slug 
+                "header" => "New deposit request placed",
+                'body' => [
+                    'A new deposit request has been placed. Check your dashboard.',
+                    'email: '. $request->email,
+                    "amount: " . $request->get("amount"),
+                    'transction id: ' . $slug,
+                ],
+                "companyName" => env('COMPANY_NAME', '')
             ];
-        
-            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
-            
-            return response()->json($this->genetateResponse("success","Deposit request placed Successfully"), 200);
-            
-         } else {
-            return response()->json($this->genetateResponse("failed","could not place request"), 402);
-         }
+
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($uesrEmail));
+
+            return response()->json($this->genetateResponse("success", ["Deposit request placed Successfully", $slug]), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not place request"), 402);
+        }
     }
 
     /**
@@ -126,11 +132,10 @@ class DepositController extends Controller
 
         if ($deposit->save() && $user->save()) {
             $deposits = Deposit::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success",["update user", $deposits ]), 200);
+            return response()->json($this->genetateResponse("success", ["update user", $deposits]), 200);
         } else {
-            return response()->json($this->genetateResponse("failed","could not update verified"), 402);
+            return response()->json($this->genetateResponse("failed", "could not update verified"), 402);
         }
-         
     }
 
     /**
@@ -143,9 +148,9 @@ class DepositController extends Controller
     {
         if (Deposit::whereId($request->id)->delete()) {
             $Deposit = Deposit::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success",["Deleted user", $Deposit ]), 200);
-         } else {
-            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
-         }
+            return response()->json($this->genetateResponse("success", ["Deleted user", $Deposit]), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not delete user"), 402);
+        }
     }
 }

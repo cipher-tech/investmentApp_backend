@@ -11,6 +11,7 @@ class HistoryController extends Controller
     {
         return  ["status" => $status, "data" => $data];
     }
+
     public function index()
     {
 
@@ -42,6 +43,21 @@ class HistoryController extends Controller
         ));
 
         if ($history->save()) {
+            // $user = User::whereId($request->get("id"))->firstOrFail();
+            $details = [
+                'name' => $user->last_name,
+                'title' => 'Selling coin',
+                "header" => " Registration Successful",
+                'body' =>   [
+                    "This is to confirm your registration. Please kindly login with the same
+                    credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+                    "To start Earning, you need to make a deposit",
+                    "Choose an investment plan, invest and Earn"
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+
+            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\GenMailer($details));
             $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {

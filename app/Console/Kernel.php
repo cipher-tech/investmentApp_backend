@@ -7,6 +7,7 @@ use App\Plans_users;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\User;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -31,7 +32,10 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             Plans_users::where("status", "active")->get()->filter(function ($plan) {
                 if($plan->count !== $plan->duration){
-                    if (intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime($plan->created_at))->format('%i')) >= 1) {
+                    $date = Carbon::now("West Central Africa");
+                    $date2 = Carbon::createFromTimeString($plan->created_at);
+                    // echo ;
+                    if ($date->diff($date2)->format("%H") == 23) {
                         $earnings =  ($plan->rate / 100 ) * $plan->amount;
                         $plan->earnings +=  $earnings;
                         $plan->count += 1;
@@ -63,7 +67,7 @@ class Kernel extends ConsoleKernel
             });
         })->everyMinute(); 
     }
-
+//intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime($plan->created_at))->format('%i')) >= 1
     /**
      * Register the commands for the application.
      *

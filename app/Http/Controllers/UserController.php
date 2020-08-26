@@ -48,7 +48,6 @@ class UserController extends Controller
             $response = ['status' => false, 'data' => 'invalid input'];
 
             return response()->json($response, 201);
-    
         }
         $user = \App\User::where('email', $request->email)->get()->last();
         if ($user && \Hash::check($request->password, $user->password)) // The passwords match...
@@ -78,7 +77,6 @@ class UserController extends Controller
             $response = ['status' => false, 'data' => ['invalid input', $validator->errors()]];
 
             return response()->json($response, 201);
-    
         }
         $payload = [
             'password' => \Hash::make($request->password),
@@ -90,14 +88,6 @@ class UserController extends Controller
             'auth_token' => '',
             "ref_code"  => $request->refCode ? $request->refCode : null,
         ];
-
-    
-        $details = [
-            'title' => 'Successful Registration ',
-            'body' =>  "this is to confirm your registration."
-        ];
-
-        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
 
         // $details1 = [
         //     'title' => 'Refcode activated ',
@@ -124,6 +114,21 @@ class UserController extends Controller
             $user->auth_token = $token; // update user token
 
             $user->save();
+
+            $details = [
+                'name' => $request->last_name,
+                'title' => 'Welcome',
+                "header" => " Registration Successful",
+                'body' =>   [
+                    "This is to confirm your registration. Please kindly login with the same
+                    credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+                    "To start Earning, you need to make a deposit",
+                    "Choose an investment plan, invest and Earn"
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+
+            \Mail::to($request->email)->send(new \App\Mail\GenMailer($details));
 
             $response = ['status' => true, 'data' => ['name' => $user->name, 'id' => $user->id, 'email' => $request->email, 'auth_token' => $token]];
         } else
@@ -163,7 +168,7 @@ class UserController extends Controller
     }
     public function getUser(Request $request)
     {
-        
+
         $user = User::whereId($request->get("id"))->firstOrFail();
         if ($user) {
             $response = $this->genetateResponse("success", $user);
@@ -176,7 +181,7 @@ class UserController extends Controller
 
     public function resetPassword(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|max:125|email',
         ]);
@@ -191,13 +196,21 @@ class UserController extends Controller
 
         if ($user->save()) {
             $response = $this->genetateResponse("success", "Password reset successful");
-            
+
             $uesrEmail = [
+                'name' => $user->last_name,
                 'title' => 'Password reset Successful',
-                'body' => 'Your Password reset was successful, use this password to log in '. $password
+                "header" => "Your Password reset was Successful",
+                'body' => [
+                    'Your Password reset was successful, use this password to log in ' . $password,
+                    "To start Earning, you need to make a deposit",
+                    "Choose an investment plan, invest and Earn"
+                ],
+                "companyName" => env('COMPANY_NAME', '')
             ];
 
-            // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($uesrEmail));
+            \Mail::to($request->email)->send(new \App\Mail\GenMailer($uesrEmail));
+            
             return response()->json($response, 200);
         } else {
             $response = $this->genetateResponse(false, "could not reset Password");
@@ -227,18 +240,18 @@ class UserController extends Controller
 
         $user = User::where('slug', $request->slug)->firstOrFail();
 
-        $user->email = $request->get("email")? $request->get("email") : $user->email  ;
-        $user->password = $request->get("password")? $request->get("password") : $user->password ;
-        $user->phone_no = $request->get("phone_no")? $request->get("phone_no") : $user->phone_no ;
-        $user->first_name = $request->get("first_name")? $request->get("first_name") : $user->first_name ;
-        $user->last_name = $request->get("last_name")? $request->get("last_name") :  $user->last_name;
-        $user->dob = $request->get("dob")? $request->get("dob") :  $user->dob;
-        $user->coutry = $request->get("coutry")? $request->get("coutry") :  $user->coutry;
-        $user->state = $request->get("state")? $request->get("state") : $user->state;
-        $user->city = $request->get("city")? $request->get("city") : $user->city;
-        $user->coin_address = $request->get("coin_address")? $request->get("coin_address") :  $user->coin_address;
-        $user->zip_code = $request->get("zip_code")? $request->get("zip_code") :  $user->zip_code;
-       
+        $user->email = $request->get("email") ? $request->get("email") : $user->email;
+        $user->password = $request->get("password") ? $request->get("password") : $user->password;
+        $user->phone_no = $request->get("phone_no") ? $request->get("phone_no") : $user->phone_no;
+        $user->first_name = $request->get("first_name") ? $request->get("first_name") : $user->first_name;
+        $user->last_name = $request->get("last_name") ? $request->get("last_name") :  $user->last_name;
+        $user->dob = $request->get("dob") ? $request->get("dob") :  $user->dob;
+        $user->coutry = $request->get("coutry") ? $request->get("coutry") :  $user->coutry;
+        $user->state = $request->get("state") ? $request->get("state") : $user->state;
+        $user->city = $request->get("city") ? $request->get("city") : $user->city;
+        $user->coin_address = $request->get("coin_address") ? $request->get("coin_address") :  $user->coin_address;
+        $user->zip_code = $request->get("zip_code") ? $request->get("zip_code") :  $user->zip_code;
+
         if ($user->save()) {
             $user = User::whereId($user->id)->firstOrFail();
             $updatedUsers =  $user = User::whereSlug($request->get("slug"))->firstOrFail();;
@@ -267,8 +280,7 @@ class UserController extends Controller
             $user->password = \Hash::make($request->newPassword);
             $response =  $this->genetateResponse("success", "Password Updated");
             return $user->save() ?  response()->json($response, 200) :  response()->json("failed update", 402);
-
-        } else{
+        } else {
             $response = $this->genetateResponse("failed", "Password do not match");
             return response()->json($response, 200);
         }
@@ -276,37 +288,37 @@ class UserController extends Controller
 
     public function userTransactions(Request $request)
     {
-        
-        $deposits = collect( Deposit::where("user_id", $request->id)
-        // ->where("status", "accepted")
-        ->with(['user' => function ($query) {
-            // selecting fields from user table
-            $query->select(['id', 'state', "coin_address"]);
-        }])
-        ->get());
+
+        $deposits = collect(Deposit::where("user_id", $request->id)
+            // ->where("status", "accepted")
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(['id', 'state', "coin_address"]);
+            }])
+            ->get());
 
         $widthdrawl = collect(Widthdrawal::where("user_id", $request->id)
-        // ->where("status", "accepted")
-        ->with(['user' => function ($query) {
-            // selecting fields from user table
-            $query->select(['id', 'state', "coin_address"]);
-        }])
-        ->get());
+            // ->where("status", "accepted")
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(['id', 'state', "coin_address"]);
+            }])
+            ->get());
         $histories = collect(History::where("user_id", $request->id)
-        ->with(['user' => function ($query) {
-            // selecting fields from user table
-            $query->select(['id', 'state', "coin_address"]);
-        }])
-        ->get());
+            ->with(['user' => function ($query) {
+                // selecting fields from user table
+                $query->select(['id', 'state', "coin_address"]);
+            }])
+            ->get());
 
         // $history = $widthdrawl->combine($deposits);
         $history = $widthdrawl->merge($deposits)->merge($histories)->sortBy("created_at")->toArray();
         // $tags = array_merge($widthdrawl, $deposits);
 
         if ($widthdrawl && $deposits) {
-            return response()->json($this->genetateResponse("success",$history), 200);
-         } else {
-            return response()->json($this->genetateResponse("failed","could not fetch history"), 402);
-         }
+            return response()->json($this->genetateResponse("success", $history), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not fetch history"), 402);
+        }
     }
 }

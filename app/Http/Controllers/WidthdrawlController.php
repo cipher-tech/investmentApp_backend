@@ -77,22 +77,23 @@ class WidthdrawlController extends Controller
 
         
         if ($widthdrawal->save()) {
-            $userMail = User::whereId($request->get("id"))->firstOrFail();
-            $details = [
-                'title' => 'New Deposit Request',
-                'body' => 'A new withdrawl request has been placed. Check your dashboard. <br/> transction id'. $slug 
-            ];
-        
-            // \Mail::to(env('MAIL_USERNAME'))->send(new \App\Mail\DepositMail($details));
 
             $uesrEmail = [
+                'name' => 'Admin',
                 'title' => 'New withdrawl Request',
-                'body' => 'A new withdrawl request has been placed. Check your dashboard'
+                "header" => "New withdrawl request placed",
+                'body' => [
+                    'A new withdrawl request has been placed. Check your dashboard.',
+                    'email: '. $request->email,
+                    "amount: ". $request->get("amount"),
+                    'transction id: ' . $slug,
+                ],
+                "companyName" => env('COMPANY_NAME', '')
             ];
         
-            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($uesrEmail));
 
-            return response()->json($this->genetateResponse("success","Widthdrawl request placed Successfully"), 200);
+            return response()->json($this->genetateResponse("success",["Widthdrawl request placed Successfully",$slug] ), 200);
         } else {
             return response()->json($this->genetateResponse("failed","could not place request"), 402);
         }

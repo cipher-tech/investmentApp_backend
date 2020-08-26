@@ -1,6 +1,7 @@
 <?php
 
 use App\Deposit;
+use App\History;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -80,9 +81,12 @@ Route::get('/', function () {
 
     // echo intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime("2020-07-09 11:37:44"))->format('%h')) ;
     // echo date('Y-m-d H:i:s', time());
+    $user = User::whereId(14)->firstOrFail();
     $date = Carbon::now("West Central Africa");
-    $date2 = Carbon::createFromTimeString("2020-07-09 10:43:44");
-    echo $date->diff($date2)->format("%H");
+    $date2 = Carbon::createFromTimeString("2020-07-09 06:43:44");
+    $date3 = Carbon::createFromTimeString("2020-08-25 10:30:44");
+    echo $date->diff($date3)->format("%H");
+    // echo  History::get("action");
     function genetateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
@@ -114,12 +118,28 @@ Route::get('/', function () {
 Route::get('send-mail', function () {
 
     $details = [
+        'name' => "test",
         'title' => 'New Deposit Request',
         'body' => 'A new withdrawl request has been placed. Check your dashboard'
     ];
 
-    \Mail::to(env('MAIL_USERNAME'))->send(new \App\Mail\DepositMail($details));
+    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
 
     dd("Email is Sent.");
     return "sent";
+});
+Route::get('mail', function () {
+    $details = [
+        'name' => 'cipher',
+        'title' => 'Successful Registration ',
+        "header" => " Registration Successful",
+        'body' =>  [
+            "This is to confirm your registration. Please kindly login with the same
+            credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+            "To start Earning, you need to make a deposit",
+            "Choose an investment plan, invest and Earn"
+        ],
+        "comapnyName" => env('COMPANY_NAME', '')
+    ];
+    return view("emails.genMailerView", compact("details"));
 });
