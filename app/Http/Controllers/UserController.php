@@ -78,12 +78,13 @@ class UserController extends Controller
 
             return response()->json($response, 201);
         }
+        $userSlug = \uniqid();
         $payload = [
             'password' => \Hash::make($request->password),
             'email' => $request->email,
             'first_name' => $request->first_name,
             "last_name" => $request->last_name,
-            'slug' => \uniqid(),
+            'slug' => $userSlug,
             'phone_no' => $request->phone,
             'auth_token' => '',
             "ref_code"  => $request->refCode ? $request->refCode : null,
@@ -120,8 +121,9 @@ class UserController extends Controller
                 'title' => 'Welcome',
                 "header" => " Registration Successful",
                 'body' =>   [
-                    "This is to confirm your registration. Please kindly login with the same
-                    credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+                    "This is to confirm your registration. Please kindly visit the link below to verify your account.",
+                    env("SERVER_NAME") . 'admin/verify/'. $userSlug,
+                    // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
                 ],
@@ -132,7 +134,7 @@ class UserController extends Controller
 
             $response = ['status' => true, 'data' => ['name' => $user->name, 'id' => $user->id, 'email' => $request->email, 'auth_token' => $token]];
         } else
-            $response = ['status' => false, 'data' => 'Couldnt register user'];
+            $response = ['status' => false, 'data' => 'Could not register user'];
 
 
         return response()->json($response, 201);

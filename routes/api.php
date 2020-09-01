@@ -41,6 +41,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
     Route::get("users/unverified", "VerifyController@getUnverifiedUsers");
     Route::post("users/verify", "VerifyController@verifyUsers");
+
+    Route::post("users/requestEmailVerification", "VerifyController@VerifyViaEmail");
     Route::post("users/verify-delete", "VerifyController@destory");
 
     Route::post("users/userBuyCoin", "HistoryController@userBuyCoin");

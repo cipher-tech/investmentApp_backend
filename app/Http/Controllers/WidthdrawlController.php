@@ -71,6 +71,7 @@ class WidthdrawlController extends Controller
             "status" => "pending",
             "slug" => $slug,
             "email" => $request->email,
+            "coin_address" => $request->coinAddress || null,
             "trans_type" => "withdrawal",
             "amount" => $request->get("amount"),
         ));

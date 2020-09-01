@@ -66,6 +66,7 @@ class DepositController extends Controller
             "status" => "pending",
             "slug" => $slug,
             "email" => $request->email,
+            "coin_address" => $request->coinAddress || null,
             "trans_type" => "deposit",
             "amount" => $request->get("amount"),
         ));

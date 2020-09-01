@@ -116,11 +116,11 @@ Route::get('/', function () {
 });
 
 Route::get('send-mail', function () {
-
+    $userSlug = "5ec5cb2ade1d7";
     $details = [
         'name' => "test",
         'title' => 'New Deposit Request',
-        'body' => 'A new withdrawl request has been placed. Check your dashboard'
+        'body' => 'A new withdrawl request has been placed. Check your dashboard '. env("SERVER_NAME") . 'admin/verify/'. $userSlug
     ];
 
     \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));

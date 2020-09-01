@@ -125,6 +125,16 @@ class VerifyController extends Controller
         }
     }
 
+    public function VerifyViaEmail(Request $request){
+        $user =  User::where("slug", $request->get('slug'))->firstOrFail();
+        $user->status = "verified";
+
+        if ($user->save()) {
+            return response()->json($this->genetateResponse("success","User Verified"), 200);
+        } else {
+            return response()->json($this->genetateResponse("failed", "could not verify User"), 402);
+        }
+    }
     public function destory(Request $request) {
         if (Verification::whereId($request->verifyId)->delete()) {
             $users = Verification::where("status", "unverified")->get();
