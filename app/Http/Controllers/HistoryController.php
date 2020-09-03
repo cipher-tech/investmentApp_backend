@@ -62,7 +62,7 @@ class HistoryController extends Controller
 
             $response = $this->genetateResponse("success", $slug);
 
-            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+            // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
 
             return response()->json($response, 200);
         } else {
@@ -103,7 +103,7 @@ class HistoryController extends Controller
 
             $response = $this->genetateResponse("success", $slug);
 
-            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+            // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
             // $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
@@ -156,7 +156,7 @@ class HistoryController extends Controller
 
             $response = $this->genetateResponse("success", $slug);
 
-            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
+            // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
             // $response = $this->genetateResponse("success", $slug);
             return response()->json($response, 200);
         } else {

@@ -84,35 +84,21 @@ Route::get('/', function () {
     $user = User::whereId(14)->firstOrFail();
     $date = Carbon::now("West Central Africa");
     $date2 = Carbon::createFromTimeString("2020-07-09 06:43:44");
-    $date3 = Carbon::createFromTimeString("2020-08-25 10:30:44");
-    echo $date->diff($date3)->format("%H");
+    $date3 = Carbon::createFromTimeString("2020-08-25 11:48:44");
+    $date4 = new Carbon("2020-08-26 14:43:50","West Central Africa");
+    // echo $date->diff($date3)->format("%H");
+    // echo ($date->diff($date4)->format("%H")) ;
+    echo  env("REMOTE_SERVER_NAME") . 'admin/verify/';
+    // if ($date->diff($date4)->format("%H") === "00") {
+    // }else{
+    //     echo "noo  ooooo";
+    // }
     // echo  History::get("action");
     function genetateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
-    // $deposits = Deposit::where("status", "pending")
-    //     // ->select('deposits.*', 'users.dob')
-    //     ->with(['user' => function($query){
-    //         $query->select(['user.id', 'user.dob']);
-    //       }]) //("user")
-    //         // ->whereHas("user",function ($qurey){
-    //         //     $qurey->select('email')->get();
-    //         // })
-    //     ->get(array('deposits.*', 'users.dob'));
-
-    // $deposits = Deposit::where("status", "accepted")
-    // ->where("user_id", "4")
-    //     ->with(['user' => function ($query) {
-    //         // selecting fields from user table
-    //         $query->select(['id', 'state', "coin_address"]);
-    //     }])
-    //     ->get();
-    // if ($deposits) {
-    //     return response()->json(genetateResponse("success", $deposits), 200);
-    // } else {
-    //     return response()->json(genetateResponse("failed", "could not fetch deposits"), 402);
-    // }
+   
 });
 
 Route::get('send-mail', function () {

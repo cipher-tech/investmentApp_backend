@@ -33,10 +33,13 @@ class Kernel extends ConsoleKernel
             Plans_users::where("status", "active")->get()->filter(function ($plan) {
                 if($plan->count !== $plan->duration){
                     $date = Carbon::now("West Central Africa");
-                    $date2 = Carbon::createFromTimeString($plan->created_at);
+                    // $date2 = Carbon::createFromTimeString($plan->created_at);
+                    $date3 = new Carbon($plan->created_at,"West Central Africa");
                     // echo ;
-                    if ($date->diff($date2)->format("%H") == 23) {
-                        $earnings =  ($plan->rate / 100 ) * $plan->amount;
+                    if ($date->diff($date3)->format("%H") == "00") {
+                        $earnings =  round(
+                            (($plan->rate / 100 ) * $plan->amount) / 7, 1
+                        );
                         $plan->earnings +=  $earnings;
                         $plan->count += 1;
                         $plan->save();
@@ -45,19 +48,21 @@ class Kernel extends ConsoleKernel
                         $user->save();
                     }          
                 }else{
+                    $totalEarnings = $plan->earnings;
                     $plan->status = "inactive";
+                    // $plan->earnings = ;
                     $plan->save();
-
                     $user = User::whereId($plan->user_id)->firstOrFail();
                     $user->current_plan= "none";
-                    $user->earnings = $plan->earnings;
+                    $user->wallet_balc += $totalEarnings + $plan->amount;
+                    $user->earnings = 0;
                     $user->save();
 
                     $history = new History(array(
                         "user_id"   =>      $plan->user_id,
                         "plan"      =>      $plan->plan_id,
                         "amount"    =>      $plan->amount,
-                        "earnings"  =>      $plan->earnings,
+                        "earnings"  =>      $totalEarnings,
                         "duration"  =>      $plan->duration,
                         "rate"      =>      $plan->rate,
                     ));
