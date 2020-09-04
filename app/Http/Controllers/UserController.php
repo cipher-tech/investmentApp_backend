@@ -122,7 +122,7 @@ class UserController extends Controller
                 "header" => " Registration Successful",
                 'body' =>   [
                     "This is to confirm your registration. Please kindly visit the link below to verify your account. ",
-                    env("REMOTE_SERVER_NAME") . 'admin/verify/'. $userSlug,
+                    env("REMOTE_SERVER_NAME") . 'login/'. $userSlug,
                     // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
