@@ -10,7 +10,7 @@ use App\User;
 
 class PlanController extends Controller
 {
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -23,8 +23,8 @@ class PlanController extends Controller
     {
         $plans = Plan::all();
 
-        return $plans ? response()->json($this->genetateResponse("success", $plans), 201) :
-            response()->json($this->genetateResponse("failed", "could not fetch plans"), 401);
+        return $plans ? response()->json($this->generateResponse("success", $plans), 201) :
+            response()->json($this->generateResponse("failed", "could not fetch plans"), 401);
     }
 
     /**
@@ -58,10 +58,10 @@ class PlanController extends Controller
         if ($rate->save()) {
             $allPlans = Plan::all();
             
-            $response = $this->genetateResponse("success", $allPlans);
+            $response = $this->generateResponse("success", $allPlans);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not add plan");
+            $response = $this->generateResponse("failed", "could not add plan");
             return response()->json($response, 402);
         }
     }
@@ -105,10 +105,10 @@ class PlanController extends Controller
 
         if ($plan->save()) {
             $allPlan = Plan::all();
-            $response = $this->genetateResponse("success",  [$allPlan, "Updated Successfully"] );
+            $response = $this->generateResponse("success",  [$allPlan, "Updated Successfully"] );
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not Update rate");
+            $response = $this->generateResponse("failed", "could not Update rate");
             return response()->json($response, 402);
         }
     }
@@ -132,7 +132,7 @@ class PlanController extends Controller
             'plan' => 'required|min:5|max:25|',
         ]);
         if ($validator->fails()) {
-            $response = $this->genetateResponse("failed","Validation failed");
+            $response = $this->generateResponse("failed","Validation failed");
             return response()->json($response, 402);
         }
 
@@ -154,11 +154,12 @@ class PlanController extends Controller
                 );
                 $details = [
                     'name' => $user->last_name,
-                    'title' => 'Plan subcribtion successful',
-                    "header" => "Your subcribtion to the ". $plan->plan." plan was successful",
+                    'title' => 'Plan subscription successful',
+                    "subject" => "Plan Subscription Successful",
+                    "header" => "Your subscription to the ". $plan->plan." plan was successful",
                     'body' =>   [
-                        'Your subcribtion for '. $request->plan . " plan was successful",
-                        "your intrest will be added according to the period specified on the plan details.",
+                        'Your subscription for '. $request->plan . " plan was successful",
+                        "your interest will be added according to the period specified on the plan details.",
                         "Please see plan details for more. Thank you"
                     ],
                     "companyName" => env('COMPANY_NAME', '')
@@ -166,8 +167,9 @@ class PlanController extends Controller
 
                 $admin = [
                     'name' => "Admin",
-                    'title' => 'A new Plan was subcribed successfully',
-                    "header" => "A new subcribtion to the". $plan->plan."was successful",
+                    'title' => 'A new Plan was subscribed successfully',
+                    "subject" => "New Plan Subscription",
+                    "header" => "A new subscription to the". $plan->plan."was successful",
                     'body' =>   [
                         'Plan: '. $request->plan,
                         'amount: '. $request->amount,
@@ -189,9 +191,10 @@ class PlanController extends Controller
                 $details1 = [
                     'name' => $referrer->last_name,
                     'title' => 'Referrer Bonus ',
+                    "subject" => "Subscription Bonus",
                     "header" => "Your referrer link was used",
                     'body' =>   [
-                        'Your referrer link was used, hence you will get a bonus of 5% off the subcribers first plan',
+                        'Your referrer link was used, hence you will get a bonus of 5% off the subscribers first plan',
                         "Please see your dashboard for more. Thank you"
                     ],
                     "companyName" => env('COMPANY_NAME', '')
@@ -206,18 +209,18 @@ class PlanController extends Controller
                 $user->current_plan = "active";
                 $user->save();
             }else{
-                $response = $this->genetateResponse("failed", "Already on a  plan");
+                $response = $this->generateResponse("failed", "Already on a  plan");
                 return response()->json($response, 200);
             }
 
-            $response = $this->genetateResponse("success", "Plan Successfully Subscribed");
+            $response = $this->generateResponse("success", "Plan Successfully Subscribed");
 
             \Mail::to($user->email)->send(new \App\Mail\GenMailer($details));
             
             \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($admin));
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed","Already on a plan");
+            $response = $this->generateResponse("failed","Already on a plan");
             return response()->json($response, 402);
         }
 

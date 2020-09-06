@@ -88,11 +88,24 @@ Route::group([], function () {
 Route::get('send-mail', function () {
 
     $details = [
-        'title' => 'Mail from ItSolutionStuff.com',
-        'body' => 'This is for testing email using smtp'
+        'name' => "name",
+        'title' => 'Welcome',
+        "header" => " Registration Successful",
+        'body' =>   [
+            "This is to confirm your registration. Please kindly visit the link below to verify your account. ",
+            "Or copy the link and paste it on your browser. ",
+            
+            // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+            // "To start Earning, you need to make a deposit",
+            // "Choose an investment plan, invest and Earn"
+        ],
+        "links" => [
+            "registerLink" => env("REMOTE_SERVER_NAME") . 'login/'. "slug",
+        ],
+        "companyName" => env('COMPANY_NAME', '')
     ];
 
-    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\GenMailer($details));
 
     dd("Email is Sent.");
     return "sent";

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class HistoryController extends Controller
 {
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -23,9 +23,9 @@ class HistoryController extends Controller
             ->get();
         // $history = History::where("status", "pending")->with("user:coin_address")->get();
         if ($history) {
-            return response()->json($this->genetateResponse("success", $history), 200);
+            return response()->json($this->generateResponse("success", $history), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not fetch deposits"), 402);
+            return response()->json($this->generateResponse("failed", "could not fetch deposits"), 402);
         }
     }
     public function userSellCoin(Request $request)
@@ -49,6 +49,7 @@ class HistoryController extends Controller
                 'name' => "Admin",
                 'title' => 'User sell coin order',
                 "header" => "Sell Coin Order",
+                "subject" => "New Withdrawal Request",
                 'body' =>   [
                     "A user just placed a sell coin order,",
                     "See details below: ",
@@ -60,13 +61,13 @@ class HistoryController extends Controller
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            $response = $this->genetateResponse("success", $slug);
+            $response = $this->generateResponse("success", $slug);
 
             // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
 
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not place order");
+            $response = $this->generateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
     }
@@ -90,6 +91,7 @@ class HistoryController extends Controller
                 'name' => "Admin",
                 'title' => 'User buy coin order',
                 "header" => "Buy Coin Order",
+                "subject" => "Registration successful",
                 'body' =>   [
                     "A user just placed a buy coin order,",
                     "See details below: ",
@@ -101,13 +103,13 @@ class HistoryController extends Controller
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            $response = $this->genetateResponse("success", $slug);
+            $response = $this->generateResponse("success", $slug);
 
             // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
-            // $response = $this->genetateResponse("success", $slug);
+            // $response = $this->generateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not place order");
+            $response = $this->generateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
     }
@@ -120,7 +122,7 @@ class HistoryController extends Controller
             $cardImagePath = time() . 'cardImage.' . explode('/', explode(':', substr($cardImage, 0, strpos($cardImage, ';')))[1])[1];
             \Image::make($request->get('cardImage'))->save(public_path('images\\') . $cardImagePath);
         } else {
-            $response = $this->genetateResponse("failed", "could not save image");
+            $response = $this->generateResponse("failed", "could not save image");
             return response()->json($response, 402);
         }
         $history = new History(array(
@@ -141,6 +143,7 @@ class HistoryController extends Controller
                 'name' => "Admin",
                 'title' => 'User sell card order',
                 "header" => "Sell Card Order",
+                "subject" => "Registration successful",
                 'body' =>   [
                     "A user just placed a sell card order,",
                     "See details below: ",
@@ -154,13 +157,13 @@ class HistoryController extends Controller
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            $response = $this->genetateResponse("success", $slug);
+            $response = $this->generateResponse("success", $slug);
 
             // \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($details));
-            // $response = $this->genetateResponse("success", $slug);
+            // $response = $this->generateResponse("success", $slug);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not place order");
+            $response = $this->generateResponse("failed", "could not place order");
             return response()->json($response, 402);
         }
     }
@@ -177,10 +180,10 @@ class HistoryController extends Controller
                 $query->select(array('id','email', 'phone_no', 'first_name'));
             }])
             ->get();
-            $response = $this->genetateResponse("success",["Updated orders", $histories]);
+            $response = $this->generateResponse("success",["Updated orders", $histories]);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not update order");
+            $response = $this->generateResponse("failed", "could not update order");
             return response()->json($response, 402);
         }
     }
@@ -189,9 +192,9 @@ class HistoryController extends Controller
     {
         if (History::whereId($request->id)->delete()) {
             $History = History::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success",["Deleted Order", $History ]), 200);
+            return response()->json($this->generateResponse("success",["Deleted Order", $History ]), 200);
          } else {
-            return response()->json($this->genetateResponse("failed","could not delete Order"), 402);
+            return response()->json($this->generateResponse("failed","could not delete Order"), 402);
          }
     }
 }

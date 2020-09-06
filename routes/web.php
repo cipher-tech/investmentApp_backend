@@ -6,7 +6,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 // use Cabon
-// use function PHPSTORM_META\type;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +39,7 @@ Route::get('/', function () {
             $tense = " until";
         }
 
-        // Set posible periods (lowest first as to end result with the highest value that isn't 0)
+        // Set possible periods (lowest first as to end result with the highest value that isn't 0)
         $period = array(" second", " minute", " hour", " day", " month", " year");
 
         // Set values of the periods using the DateTime formats (matching the periods above)
@@ -62,7 +61,7 @@ Route::get('/', function () {
         // If any values were larger than 0 (ie. timedifference is not 0 years, 0 months, 0 days, 0 hours, 0 minutes, 0 seconds ago) return interval
         if (isset($interval)) {
             return $interval;
-            // Else if no values were larger than 0 (ie. timedifference is 0 years, 0 months, 0 days, 0 hours, 0 minites, 0 seconds ago) return 0 seconds ago
+            // Else if no values were larger than 0 (ie. timedifference is 0 years, 0 months, 0 days, 0 hours, 0 minutes, 0 seconds ago) return 0 seconds ago
         } else {
             return "0 seconds" . $tense;
         }
@@ -94,7 +93,7 @@ Route::get('/', function () {
     //     echo "noo  ooooo";
     // }
     // echo  History::get("action");
-    function genetateResponse($status, $data)
+    function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -104,12 +103,25 @@ Route::get('/', function () {
 Route::get('send-mail', function () {
     $userSlug = "5ec5cb2ade1d7";
     $details = [
-        'name' => "test",
-        'title' => 'New Deposit Request',
-        'body' => 'A new withdrawl request has been placed. Check your dashboard '. env("SERVER_NAME") . 'admin/verify/'. $userSlug
+        'name' => "name",
+        'title' => 'Welcome',
+        "header" => " Registration Successful",
+        "subject" => "Registration successful",
+        'body' =>   [
+            "This is to confirm your registration. Please kindly visit the link below to verify your account. ",
+            "Or copy the link and paste it on your browser. ",
+            
+            // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
+            // "To start Earning, you need to make a deposit",
+            // "Choose an investment plan, invest and Earn"
+        ],
+        "links" => [
+            "registerLink" => env("REMOTE_SERVER_NAME") . 'login/'. $userSlug,
+        ],
+        "companyName" => env('COMPANY_NAME', '')
     ];
 
-    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details));
+    \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\GenMailer($details));
 
     dd("Email is Sent.");
     return "sent";
@@ -125,7 +137,7 @@ Route::get('mail', function () {
             "To start Earning, you need to make a deposit",
             "Choose an investment plan, invest and Earn"
         ],
-        "comapnyName" => env('COMPANY_NAME', '')
+        "companyName" => env('COMPANY_NAME', '')
     ];
     return view("emails.genMailerView", compact("details"));
 });

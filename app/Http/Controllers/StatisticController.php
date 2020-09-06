@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class StatisticController extends Controller
 {
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -25,7 +25,7 @@ class StatisticController extends Controller
 
     public function getCoinAddress(){
         $Admin = User::where('role', "admin")->firstOrFail();
-        $response = $this->genetateResponse("success",$Admin->coin_address);
+        $response = $this->generateResponse("success",$Admin->coin_address);
         return response()->json($response, 201);
     }
 
@@ -33,9 +33,9 @@ class StatisticController extends Controller
     {
         $userPlan = Plans_users::where("user_id", $request->id)->first();
         if($userPlan){
-            $response = $this->genetateResponse("success", [$userPlan->amount,$userPlan->earnings]);
+            $response = $this->generateResponse("success", [$userPlan->amount,$userPlan->earnings]);
         }else{
-            $response = $this->genetateResponse("success", null);
+            $response = $this->generateResponse("success", null);
         }
         return response()->json($response, 201);
     }
@@ -46,18 +46,18 @@ class StatisticController extends Controller
         $verifiedUsers = User::where("status", 'verified')->count();
 
         $totalDeposits = Deposit::all()->sum("amount");
-        $totalAccepedDeposits = Deposit::where("status", "accepted")->sum("amount");
+        $totalAcceptedDeposits = Deposit::where("status", "accepted")->sum("amount");
         $totalPendingDeposits = Deposit::where("status", "pending")->sum("amount");
         $totalDepositsCount = Deposit::all()->count();
-        $totalAccepedDepositsCount = Deposit::where("status", "accepted")->count();
+        $totalAcceptedDepositsCount = Deposit::where("status", "accepted")->count();
         $totalPendingDepositsCount = Deposit::where("status", "pending")->count();
 
-        $totalWidthdrawals = Deposit::all()->sum("amount");
-        $totalAccepedWidthdrawals = Deposit::where("status", "accepted")->sum("amount");
-        $totalPendingWidthdrawals = Deposit::where("status", "pending")->sum("amount");
-        $totalWidthdrawalsCount = Deposit::all()->count();
-        $totalAccepedWidthdrawalsCount = Deposit::where("status", "accepted")->count();
-        $totalPendingWidthdrawalsCount = Deposit::where("status", "pending")->count();
+        $totalWithdrawals = Deposit::all()->sum("amount");
+        $totalAcceptedWithdrawals = Deposit::where("status", "accepted")->sum("amount");
+        $totalPendingWithdrawals = Deposit::where("status", "pending")->sum("amount");
+        $totalWithdrawalsCount = Deposit::all()->count();
+        $totalAcceptedWithdrawalsCount = Deposit::where("status", "accepted")->count();
+        $totalPendingWithdrawalsCount = Deposit::where("status", "pending")->count();
 
         $totalTransactions = History::all()->count();
         $totalAcceptedTransactions = History::where("status", "accepted")->count();

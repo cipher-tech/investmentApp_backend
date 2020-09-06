@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class DepositController extends Controller
 {
 
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -28,9 +28,9 @@ class DepositController extends Controller
             }])
             ->get();
         if ($deposits) {
-            return response()->json($this->genetateResponse("success", $deposits), 200);
+            return response()->json($this->generateResponse("success", $deposits), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not fetch deposits"), 402);
+            return response()->json($this->generateResponse("failed", "could not fetch deposits"), 402);
         }
     }
 
@@ -57,7 +57,7 @@ class DepositController extends Controller
             'email' => 'required|min:2|max:125|email',
         ]);
         if ($validator->fails()) {
-            return response()->json($this->genetateResponse("failed", "Validation failed"), 402);
+            return response()->json($this->generateResponse("failed", "Validation failed"), 402);
         }
 
         $slug = uniqid();
@@ -73,24 +73,25 @@ class DepositController extends Controller
 
         if ($deposit->save()) {
             
-            $uesrEmail = [
+            $userEmail = [
                 'name' => 'Admin',
                 'title' => 'New deposit Request',
                 "header" => "New deposit request placed",
+                "subject" => "New Deposit Request",
                 'body' => [
                     'A new deposit request has been placed. Check your dashboard.',
                     'email: '. $request->email,
                     "amount: " . $request->get("amount"),
-                    'transction id: ' . $slug,
+                    'transaction id: ' . $slug,
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($uesrEmail));
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($userEmail));
 
-            return response()->json($this->genetateResponse("success", ["Deposit request placed Successfully", $slug]), 200);
+            return response()->json($this->generateResponse("success", ["Deposit request placed Successfully", $slug]), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not place request"), 402);
+            return response()->json($this->generateResponse("failed", "could not place request"), 402);
         }
     }
 
@@ -133,9 +134,9 @@ class DepositController extends Controller
 
         if ($deposit->save() && $user->save()) {
             $deposits = Deposit::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success", ["update user", $deposits]), 200);
+            return response()->json($this->generateResponse("success", ["update user", $deposits]), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not update verified"), 402);
+            return response()->json($this->generateResponse("failed", "could not update verified"), 402);
         }
     }
 
@@ -149,9 +150,9 @@ class DepositController extends Controller
     {
         if (Deposit::whereId($request->id)->delete()) {
             $Deposit = Deposit::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success", ["Deleted user", $Deposit]), 200);
+            return response()->json($this->generateResponse("success", ["Deleted user", $Deposit]), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not delete user"), 402);
+            return response()->json($this->generateResponse("failed", "could not delete user"), 402);
         }
     }
 }

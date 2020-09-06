@@ -12,7 +12,7 @@ class WidthdrawlController extends Controller
 {
 
     // private $emailAddress = env('MAIL_USERNAME');
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -32,9 +32,9 @@ class WidthdrawlController extends Controller
         ->get();
         // $widthdrawl = Widthdrawal::where("status", "pending")->with("user:coin_address")->get();
         if ($widthdrawl) {
-            return response()->json($this->genetateResponse("success",$widthdrawl), 200);
+            return response()->json($this->generateResponse("success",$widthdrawl), 200);
          } else {
-            return response()->json($this->genetateResponse("failed","could not fetch deposits"), 402);
+            return response()->json($this->generateResponse("failed","could not fetch deposits"), 402);
          }
     }
 
@@ -62,7 +62,7 @@ class WidthdrawlController extends Controller
             'email' => 'required|min:2|max:125|email',
         ]);
         if ($validator->fails()) {
-            return response()->json($this->genetateResponse("failed","Validation failed"), 402);
+            return response()->json($this->generateResponse("failed","Validation failed"), 402);
         }
 
         $slug = uniqid();
@@ -79,7 +79,7 @@ class WidthdrawlController extends Controller
         
         if ($widthdrawal->save()) {
 
-            $uesrEmail = [
+            $userEmail = [
                 'name' => 'Admin',
                 'title' => 'New withdrawl Request',
                 "header" => "New withdrawl request placed",
@@ -87,16 +87,16 @@ class WidthdrawlController extends Controller
                     'A new withdrawl request has been placed. Check your dashboard.',
                     'email: '. $request->email,
                     "amount: ". $request->get("amount"),
-                    'transction id: ' . $slug,
+                    'transaction id: ' . $slug,
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
         
-            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($uesrEmail));
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($userEmail));
 
-            return response()->json($this->genetateResponse("success",["Widthdrawl request placed Successfully",$slug] ), 200);
+            return response()->json($this->generateResponse("success",["Withdrawal request placed Successfully",$slug] ), 200);
         } else {
-            return response()->json($this->genetateResponse("failed","could not place request"), 402);
+            return response()->json($this->generateResponse("failed","could not place request"), 402);
         }
     }
 
@@ -141,9 +141,9 @@ class WidthdrawlController extends Controller
         }
         if ($widthdrawl->save() && $user->save()) {
             $widthdrawal = Widthdrawal::where("status", "pending")->get(); 
-            return response()->json($this->genetateResponse("success",["update user", $widthdrawal ]), 200);
+            return response()->json($this->generateResponse("success",["update user", $widthdrawal ]), 200);
         } else {
-            return response()->json($this->genetateResponse("failed","could not update verified"), 402);
+            return response()->json($this->generateResponse("failed","could not update verified"), 402);
         }
     }
 
@@ -157,9 +157,9 @@ class WidthdrawlController extends Controller
     {
         if (Widthdrawal::whereId($request->id)->delete()) {
             $widthdrawal = Widthdrawal::where("status", "pending")->get();
-            return response()->json($this->genetateResponse("success",["Deleted user", $widthdrawal ]), 200);
+            return response()->json($this->generateResponse("success",["Deleted user", $widthdrawal ]), 200);
          } else {
-            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
+            return response()->json($this->generateResponse("failed","could not delete user"), 402);
          }
     }
 }

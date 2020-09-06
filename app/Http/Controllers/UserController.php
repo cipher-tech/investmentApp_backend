@@ -13,7 +13,7 @@ use JWTAuthException;
 
 class UserController extends Controller
 {
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -57,7 +57,7 @@ class UserController extends Controller
             $user->save();
             $response = ['status' => true, 'data' => ["user" => $user]];
         } else
-            $response = ['status' => false, 'data' => 'Record doesnt exists'];
+            $response = ['status' => false, 'data' => "Record doesn't exists"];
 
 
         return response()->json($response, 201);
@@ -101,12 +101,12 @@ class UserController extends Controller
         if ($user->save()) {
 
             $token = self::getToken($request->email, $request->password); // generate user token
-            $uesrEmail = [
+            $userEmail = [
                 'title' => 'Registration Successful',
                 'body' => 'Your registration was successful, login  to access your dashboard.'
             ];
 
-            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($uesrEmail));
+            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($userEmail));
 
             if (!is_string($token))  return response()->json(['status' => false, 'data' => 'Token generation failed'], 201);
 
@@ -120,12 +120,17 @@ class UserController extends Controller
                 'name' => $request->last_name,
                 'title' => 'Welcome',
                 "header" => " Registration Successful",
+                "subject" => "Registration successful",
                 'body' =>   [
                     "This is to confirm your registration. Please kindly visit the link below to verify your account. ",
-                    env("REMOTE_SERVER_NAME") . 'login/'. $userSlug,
+                    "Or copy the link and paste it on your browser. ",
+                    
                     // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
+                ],
+                "links" => [
+                    "registerLink" => env("REMOTE_SERVER_NAME") . 'login/'. $userSlug,
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
@@ -143,10 +148,10 @@ class UserController extends Controller
     public function fetchAllUsers()
     {
         if ($users = User::all()) {
-            $response = $this->genetateResponse(true, $users);
+            $response = $this->generateResponse(true, $users);
             $status = 201;
         } else {
-            $response = $this->genetateResponse(false, 'Couldnt get users');
+            $response = $this->generateResponse(false, "couldn't get users");
             $status = 402;
         }
         return response()->json($response, $status);
@@ -161,10 +166,10 @@ class UserController extends Controller
 
         if ($user->save()) {
             $allUsers = User::all();
-            $response = $this->genetateResponse("success", $allUsers);
+            $response = $this->generateResponse("success", $allUsers);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not Update user");
+            $response = $this->generateResponse("failed", "could not Update user");
             return response()->json($response, 402);
         }
     }
@@ -173,10 +178,10 @@ class UserController extends Controller
 
         $user = User::whereId($request->get("id"))->firstOrFail();
         if ($user) {
-            $response = $this->genetateResponse("success", $user);
+            $response = $this->generateResponse("success", $user);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not get user");
+            $response = $this->generateResponse("failed", "could not get user");
             return response()->json($response, 402);
         }
     }
@@ -188,7 +193,7 @@ class UserController extends Controller
             'email' => 'required|max:125|email',
         ]);
         if ($validator->fails()) {
-            $response = $this->genetateResponse(false, "could not reset Password");
+            $response = $this->generateResponse(false, "could not reset Password");
             return response()->json($response, 402);
         }
 
@@ -197,12 +202,13 @@ class UserController extends Controller
         $user->password = \Hash::make($password);
 
         if ($user->save()) {
-            $response = $this->genetateResponse("success", "Password reset successful");
+            $response = $this->generateResponse("success", "Password reset successful");
 
-            $uesrEmail = [
+            $userEmail = [
                 'name' => $user->last_name,
                 'title' => 'Password reset Successful',
                 "header" => "Your Password reset was Successful",
+                "subject" => "Password Reset",
                 'body' => [
                     'Your Password reset was successful, use this password to log in: ' . $password,
                     // "To start Earning, you need to make a deposit",
@@ -211,11 +217,11 @@ class UserController extends Controller
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            \Mail::to($request->email)->send(new \App\Mail\GenMailer($uesrEmail));
+            \Mail::to($request->email)->send(new \App\Mail\GenMailer($userEmail));
             
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse(false, "could not reset Password");
+            $response = $this->generateResponse(false, "could not reset Password");
             return response()->json($response, 402);
         }
     }
@@ -236,7 +242,7 @@ class UserController extends Controller
         //     'coin_address' => 'min:4|max:100',
         // ]);
         // if ($validator->fails()) {
-        //     $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
+        //     $response = $this->generateResponse("failed", ['invalid input', $validator->errors()]);
         //     return response()->json($response, 402);
         // // }
 
@@ -257,10 +263,10 @@ class UserController extends Controller
         if ($user->save()) {
             $user = User::whereId($user->id)->firstOrFail();
             $updatedUsers =  $user = User::whereSlug($request->get("slug"))->firstOrFail();;
-            $response = $this->genetateResponse("success", $updatedUsers);
+            $response = $this->generateResponse("success", $updatedUsers);
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not Update user");
+            $response = $this->generateResponse("failed", "could not Update user");
             return response()->json($response, 402);
         }
     }
@@ -271,7 +277,7 @@ class UserController extends Controller
             'newPassword' => 'required|min:6|max:40',
         ]);
         if ($validator->fails()) {
-            $response = $this->genetateResponse("failed", ['invalid input', $validator->errors()]);
+            $response = $this->generateResponse("failed", ['invalid input', $validator->errors()]);
             return response()->json($response, 200);
         }
 
@@ -280,10 +286,10 @@ class UserController extends Controller
         if ($user && \Hash::check($request->oldPassword, $user->password)) // The passwords match...
         {
             $user->password = \Hash::make($request->newPassword);
-            $response =  $this->genetateResponse("success", "Password Updated");
+            $response =  $this->generateResponse("success", "Password Updated");
             return $user->save() ?  response()->json($response, 200) :  response()->json("failed update", 402);
         } else {
-            $response = $this->genetateResponse("failed", "Password do not match");
+            $response = $this->generateResponse("failed", "Password do not match");
             return response()->json($response, 200);
         }
     }
@@ -318,9 +324,9 @@ class UserController extends Controller
         // $tags = array_merge($widthdrawl, $deposits);
 
         if ($widthdrawl && $deposits) {
-            return response()->json($this->genetateResponse("success", $history), 200);
+            return response()->json($this->generateResponse("success", $history), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not fetch history"), 402);
+            return response()->json($this->generateResponse("failed", "could not fetch history"), 402);
         }
     }
 }

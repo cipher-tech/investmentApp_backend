@@ -31,7 +31,6 @@ class GenMailer extends Mailable
      */
     public function build()
     {
-        return $this->subject('support@alphacoinz.com')->from('support@alphacoinz.com')->view('emails.genMailerView');
-
+        return $this->from('support@alphacoinz.com')->subject( $this->details["subject"])->view('emails.genMailerView');
     }
 }

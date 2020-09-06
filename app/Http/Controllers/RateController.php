@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class RateController extends Controller
 {
-    private function genetateResponse($status, $data){
+    private function generateResponse($status, $data){
         return  ["status" => $status, "data" => $data];
     }
     /**
@@ -20,8 +20,8 @@ class RateController extends Controller
     {
         $rates = Rate::all();
 
-        return $rates? response()->json($this->genetateResponse("success", $rates), 201) :
-        response()->json($this->genetateResponse("failed", "could not fetch Rates"), 401);
+        return $rates? response()->json($this->generateResponse("success", $rates), 201) :
+        response()->json($this->generateResponse("failed", "could not fetch Rates"), 401);
     }
 
     /**
@@ -43,10 +43,10 @@ class RateController extends Controller
 
         if ($rate->save()) {
             $allRates = Rate::all();
-            $response = $this->genetateResponse("success", $allRates );
+            $response = $this->generateResponse("success", $allRates );
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not add rate");
+            $response = $this->generateResponse("failed", "could not add rate");
             return response()->json($response, 402);
         }
         
@@ -67,10 +67,10 @@ class RateController extends Controller
 
         if ($rate->save()) {
             $allRates = Rate::all();
-            $response = $this->genetateResponse("success", $allRates );
+            $response = $this->generateResponse("success", $allRates );
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not add card");
+            $response = $this->generateResponse("failed", "could not add card");
             return response()->json($response, 402);
         }
         
@@ -90,10 +90,10 @@ class RateController extends Controller
 
         if ($rate->save()) {
             $allRates = Rate::all();
-            $response = $this->genetateResponse("success", $allRates );
+            $response = $this->generateResponse("success", $allRates );
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not add card");
+            $response = $this->generateResponse("failed", "could not add card");
             return response()->json($response, 402);
         }
         
@@ -153,10 +153,10 @@ class RateController extends Controller
 
         if ($rate->save()) {
             $allRates = Rate::all();
-            $response = $this->genetateResponse("success", $allRates );
+            $response = $this->generateResponse("success", $allRates );
             return response()->json($response, 200);
         } else {
-            $response = $this->genetateResponse("failed", "could not Update rate");
+            $response = $this->generateResponse("failed", "could not Update rate");
             return response()->json($response, 402);
         }
     }
@@ -171,9 +171,9 @@ class RateController extends Controller
     {
         if (Rate::whereId($request->id)->delete()) {
             $Rate = Rate::all();
-            return response()->json($this->genetateResponse("success",["Deleted rate", $Rate ]), 200);
+            return response()->json($this->generateResponse("success",["Deleted rate", $Rate ]), 200);
          } else {
-            return response()->json($this->genetateResponse("failed","could not delete rate"), 402);
+            return response()->json($this->generateResponse("failed","could not delete rate"), 402);
          }
     }
 }

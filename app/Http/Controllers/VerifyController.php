@@ -10,7 +10,7 @@ use App\User;
 
 class VerifyController extends Controller
 {
-    private function genetateResponse($status, $data)
+    private function generateResponse($status, $data)
     {
         return  ["status" => $status, "data" => $data];
     }
@@ -35,7 +35,7 @@ class VerifyController extends Controller
             // 'address' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1048',
         ]);
         if ($validator->fails()) {
-            $response = $this->genetateResponse("failed",['invalid input', $validator->errors()]);
+            $response = $this->generateResponse("failed",['invalid input', $validator->errors()]);
             return response()->json($response, 402);
         }
         
@@ -72,16 +72,16 @@ class VerifyController extends Controller
 
 
 
-        // $fileupload = new Verification(array(
+        // $fileUpload = new Verification(array(
         //             "images" => $name,
         //             "status" => "unverified", 
         //             "user_id" => $request->get("id")
         //         ));
-        //  $fileupload->save();
+        //  $fileUpload->save();
         //  return response()->json('Successfully added');
         // // if ($request->hasFile('image')){
         //     $file = $request['image'];
-        //     // $fileName = "myname".'LOGO'. time() . '.' . $file->getClientOriginalExtension();
+        //     // $fileName = "myName".'LOGO'. time() . '.' . $file->getClientOriginalExtension();
         //     // $path = $file->storeAs('photos', $fileName);
 
         //     return response()->json($file, 200);
@@ -92,7 +92,7 @@ class VerifyController extends Controller
         //         "status" => "unverified", 
         //         "user_id" => $request->get("id")
         //     ));
-        //    return  $user->verifiedUsers()->save($info) ?  response()->json("okey ", 200) :  response()->json("not ok", 402) ;
+        //    return  $user->verifiedUsers()->save($info) ?  response()->json("okay ", 200) :  response()->json("not ok", 402) ;
     }
 
     public function verifyUsers(Request $request){
@@ -101,9 +101,10 @@ class VerifyController extends Controller
         if($user->save()){
             $verifyContent = Verification::whereId($request->verifyId)->firstOrFail();
             $verifyContent->status = "verified";
-            $uesrEmail = [
+            $userEmail = [
                 'name' => $user->last_name,
                 'title' => 'Account Verified',
+                "subject" => "Account Verification",
                 "header" => "Your account has been verified",
                 'body' => [
                     'Your account has been verified. Additional features have be added',
@@ -111,17 +112,17 @@ class VerifyController extends Controller
                 "companyName" => env('COMPANY_NAME', '')
             ];
         
-            \Mail::to($user->email)->send(new \App\Mail\GenMailer($uesrEmail));
+            \Mail::to($user->email)->send(new \App\Mail\GenMailer($userEmail));
             
              if ($verifyContent->save()) {
                 $users = Verification::where("status", "unverified")->get();
-                return response()->json($this->genetateResponse("success",["update user", $users ]), 200);
+                return response()->json($this->generateResponse("success",["update user", $users ]), 200);
              } else {
-                return response()->json($this->genetateResponse("failed","could not update verified"), 402);
+                return response()->json($this->generateResponse("failed","could not update verified"), 402);
              }
              
         }else{
-            return response()->json($this->genetateResponse("failed","could not update user"), 402);
+            return response()->json($this->generateResponse("failed","could not update user"), 402);
         }
     }
 
@@ -130,17 +131,17 @@ class VerifyController extends Controller
         $user->status = "verified";
 
         if ($user->save()) {
-            return response()->json($this->genetateResponse("success","User Verified"), 200);
+            return response()->json($this->generateResponse("success","User Verified"), 200);
         } else {
-            return response()->json($this->genetateResponse("failed", "could not verify User"), 402);
+            return response()->json($this->generateResponse("failed", "could not verify User"), 402);
         }
     }
     public function destory(Request $request) {
         if (Verification::whereId($request->verifyId)->delete()) {
             $users = Verification::where("status", "unverified")->get();
-            return response()->json($this->genetateResponse("success",["Deleted user", $users ]), 200);
+            return response()->json($this->generateResponse("success",["Deleted user", $users ]), 200);
          } else {
-            return response()->json($this->genetateResponse("failed","could not delete user"), 402);
+            return response()->json($this->generateResponse("failed","could not delete user"), 402);
          }
     }
 }
