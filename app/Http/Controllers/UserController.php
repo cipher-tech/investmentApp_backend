@@ -214,6 +214,7 @@ class UserController extends Controller
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
                 ],
+                 "links" => "",
                 "companyName" => env('COMPANY_NAME', '')
             ];
 

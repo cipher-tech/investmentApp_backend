@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
                     $history->save();
                 }
             });
-        })->everyMinute(); 
+        })->hourly(); //everyMinute(); //hourly(); ; 
     }
 //intval(date_diff(new \DateTime(date('Y-m-d H:i:s', time())), new \DateTime($plan->created_at))->format('%i')) >= 1
     /**

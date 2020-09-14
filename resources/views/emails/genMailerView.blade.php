@@ -25,7 +25,10 @@
     <p style='font-family:Arial, Helvetica, sans-serif;'>{{$item}}</p>
     
 @endforeach
-<a href="{{$details["links"]["registerLink"]}}" target="_blank">{{$details["links"]["registerLink"]}}</a>
+
+@if($details["links"])
+    <a href="{{$details["links"]["registerLink"]}}" target="_blank">{{$details["links"]["registerLink"]}}</a>
+@endif
   </div>
 
 <br>

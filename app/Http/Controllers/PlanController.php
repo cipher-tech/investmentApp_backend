@@ -162,6 +162,7 @@ class PlanController extends Controller
                         "your interest will be added according to the period specified on the plan details.",
                         "Please see plan details for more. Thank you"
                     ],
+                     "links" => "",
                     "companyName" => env('COMPANY_NAME', '')
                 ];
 
@@ -176,6 +177,7 @@ class PlanController extends Controller
                         'User email: '.  $user->email,
                         'Name: '.  $user->last_name,
                     ],
+                     "links" => "",
                     "companyName" => env('COMPANY_NAME', '')
                 ];
 
@@ -197,6 +199,7 @@ class PlanController extends Controller
                         'Your referrer link was used, hence you will get a bonus of 5% off the subscribers first plan',
                         "Please see your dashboard for more. Thank you"
                     ],
+                     "links" => "",
                     "companyName" => env('COMPANY_NAME', '')
                 ];
             

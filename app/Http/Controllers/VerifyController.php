@@ -109,6 +109,7 @@ class VerifyController extends Controller
                 'body' => [
                     'Your account has been verified. Additional features have be added',
                 ],
+                 "links" => "",
                 "companyName" => env('COMPANY_NAME', '')
             ];
         

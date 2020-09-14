@@ -34,7 +34,7 @@ class WidthdrawlController extends Controller
         if ($widthdrawl) {
             return response()->json($this->generateResponse("success",$widthdrawl), 200);
          } else {
-            return response()->json($this->generateResponse("failed","could not fetch deposits"), 402);
+            return response()->json($this->generateResponse("failed","could not fetch withdrawals"), 402);
          }
     }
 
@@ -59,7 +59,7 @@ class WidthdrawlController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => 'required|min:1|max:40',
             'amount' => 'required|min:2|max:40',
-            'email' => 'required|min:2|max:125|email',
+            'email' => 'min:2|max:125|email',
         ]);
         if ($validator->fails()) {
             return response()->json($this->generateResponse("failed","Validation failed"), 402);
@@ -83,12 +83,14 @@ class WidthdrawlController extends Controller
                 'name' => 'Admin',
                 'title' => 'New withdrawl Request',
                 "header" => "New withdrawl request placed",
+                "subject" => "New withdrawal Request",
                 'body' => [
                     'A new withdrawl request has been placed. Check your dashboard.',
                     'email: '. $request->email,
                     "amount: ". $request->get("amount"),
                     'transaction id: ' . $slug,
                 ],
+                "links" => "",
                 "companyName" => env('COMPANY_NAME', '')
             ];
         
