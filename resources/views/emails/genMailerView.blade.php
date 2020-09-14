@@ -19,19 +19,19 @@
 
 <div style='width:100%;height: auto; border-top: 1px solid #D3D3D3; margin: auto;border-radius: 6px;'>
 <br>
-    {{-- // <!-- inpput main content here --> --}}
+    {{-- // <!-- input main content here --> --}}
     <p style='font-family:Arial, Helvetica, sans-serif;'><strong> {{$details["header"]}} </strong></p>
 @foreach ($details["body"] as $item)
     <p style='font-family:Arial, Helvetica, sans-serif;'>{{$item}}</p>
     
 @endforeach
-<a href="{{$details["links"]["registerLink"]}}" target="_blank">{{$details["links"]["registerLink"]}}</a>
+<a href="{{$details["links"] ? $details["links"]["registerLink"] : ""}}" target="_blank">{{$details["links"] ? $details["links"]["registerLink"] : ""}}</a>
   </div>
 
 <br>
 <br>
 
-{{-- // if didnt close well, add closing div here --}}
+{{-- // if didn't close well, add closing div here --}}
   <div style='background:#D3D3D3; padding:5px;'>
 
  <p style='text-align:center;'>

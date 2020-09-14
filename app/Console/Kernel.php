@@ -51,12 +51,15 @@ class Kernel extends ConsoleKernel
                     $totalEarnings = $plan->earnings;
                     $plan->status = "inactive";
                     // $plan->earnings = ;
-                    $plan->save();
                     $user = User::whereId($plan->user_id)->firstOrFail();
                     $user->current_plan= "none";
                     $user->wallet_balc += $totalEarnings + $plan->amount;
                     $user->earnings = 0;
+                    
+                    $plan->earnings = 0;
+
                     $user->save();
+                    $plan->save();
 
                     $history = new History(array(
                         "user_id"   =>      $plan->user_id,

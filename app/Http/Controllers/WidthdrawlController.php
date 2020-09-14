@@ -81,13 +81,16 @@ class WidthdrawlController extends Controller
 
             $userEmail = [
                 'name' => 'Admin',
-                'title' => 'New withdrawl Request',
-                "header" => "New withdrawl request placed",
+                'title' => 'New withdrawal Request',
+                "header" => "New withdrawal request placed",
                 'body' => [
                     'A new withdrawl request has been placed. Check your dashboard.',
                     'email: '. $request->email,
                     "amount: ". $request->get("amount"),
                     'transaction id: ' . $slug,
+                ],
+                "links" => [
+                    "registerLink" => "",
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];

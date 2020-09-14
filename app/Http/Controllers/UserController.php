@@ -90,23 +90,10 @@ class UserController extends Controller
             "ref_code"  => $request->refCode ? $request->refCode : null,
         ];
 
-        // $details1 = [
-        //     'title' => 'Refcode activated ',
-        //     'body' =>  "Your reference was activated. As a result you'll 5% of their first plan."
-        // ];
-
-        // \Mail::to("nickchibuikem@gmail.com")->send(new \App\Mail\DepositMail($details1));
-
         $user = new \App\User($payload);
         if ($user->save()) {
 
             $token = self::getToken($request->email, $request->password); // generate user token
-            $userEmail = [
-                'title' => 'Registration Successful',
-                'body' => 'Your registration was successful, login  to access your dashboard.'
-            ];
-
-            // \Mail::to($userMail->email)->send(new \App\Mail\DepositMail($userEmail));
 
             if (!is_string($token))  return response()->json(['status' => false, 'data' => 'Token generation failed'], 201);
 
@@ -124,18 +111,38 @@ class UserController extends Controller
                 'body' =>   [
                     "This is to confirm your registration. Please kindly visit the link below to verify your account. ",
                     "Or copy the link and paste it on your browser. ",
-                    
+
                     // "credentials used in registration to access your dashboard and lots of other features. Thanks and welcome",
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
                 ],
                 "links" => [
-                    "registerLink" => env("REMOTE_SERVER_NAME") . 'login/'. $userSlug,
+                    "registerLink" => env("REMOTE_SERVER_NAME") . 'login/' . $userSlug,
+                ],
+                "companyName" => env('COMPANY_NAME', '')
+            ];
+            $admin = [
+                'name' => "Admin",
+                'title' => 'A new User subscribed successfully',
+                "subject" => "New User Registration",
+                "header" => "A new User has registered",
+                'body' =>   [
+                    'email' => $request->email,
+                    'first_name' => $request->first_name,
+                    "last_name" => $request->last_name,
+                    'slug' => $userSlug,
+                    'phone_no' => $request->phone,
+                ],
+                "links" => [
+                    "registerLink" => "",
                 ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
-            \Mail::to($request->email)->send(new \App\Mail\GenMailer($details));
+
+            \Mail::to($request->email)->send(new \App\Mail\UserRegistertion($details));
+
+            \Mail::to(env('MAIL_USERNAME', ''))->send(new \App\Mail\GenMailer($admin));
 
             $response = ['status' => true, 'data' => ['name' => $user->name, 'id' => $user->id, 'email' => $request->email, 'auth_token' => $token]];
         } else
@@ -214,11 +221,14 @@ class UserController extends Controller
                     // "To start Earning, you need to make a deposit",
                     // "Choose an investment plan, invest and Earn"
                 ],
+                "links" => [
+                    "registerLink" => "",
+                ],
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
             \Mail::to($request->email)->send(new \App\Mail\GenMailer($userEmail));
-            
+
             return response()->json($response, 200);
         } else {
             $response = $this->generateResponse(false, "could not reset Password");
