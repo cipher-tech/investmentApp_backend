@@ -84,7 +84,13 @@ class DepositController extends Controller
                     "amount: " . $request->get("amount"),
                     'transaction id: ' . $slug,
                 ],
+<<<<<<< HEAD
                 "links" => "",
+=======
+                "links" => [
+                    "registerLink" => "",
+                ],
+>>>>>>> 27f281f5e9c8313fef6f69520060f29be765febf
                 "companyName" => env('COMPANY_NAME', '')
             ];
 
