@@ -164,13 +164,10 @@ class PlanController extends Controller
                         "your interest will be added according to the period specified on the plan details.",
                         "Please see plan details for more. Thank you"
                     ],
-<<<<<<< HEAD
-                     "links" => "",
-=======
+
                     "links" => [
                         "registerLink" => "",
                     ],
->>>>>>> 27f281f5e9c8313fef6f69520060f29be765febf
                     "companyName" => env('COMPANY_NAME', '')
                 ];
 
@@ -185,13 +182,10 @@ class PlanController extends Controller
                         'User email: '.  $user->email,
                         'Name: '.  $user->last_name,
                     ],
-<<<<<<< HEAD
-                     "links" => "",
-=======
+
                     "links" => [
                         "registerLink" => "",
                     ],
->>>>>>> 27f281f5e9c8313fef6f69520060f29be765febf
                     "companyName" => env('COMPANY_NAME', '')
                 ];
 
@@ -213,13 +207,10 @@ class PlanController extends Controller
                         'Your referrer link was used, hence you will get a bonus of 5% off the subscribers first plan',
                         "Please see your dashboard for more. Thank you"
                     ],
-<<<<<<< HEAD
-                     "links" => "",
-=======
+
                     "links" => [
                         "registerLink" => "",
                     ],
->>>>>>> 27f281f5e9c8313fef6f69520060f29be765febf
                     "companyName" => env('COMPANY_NAME', '')
                 ];
             
